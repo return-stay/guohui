@@ -1,0 +1,35 @@
+const Datas = [
+  {
+    Id: 0,
+    teacherName: "randy",
+    Name: '实验耗材',
+    grade: 1,
+    BrandName: "applesss",
+    subject: "数学",
+    Seniority: 9,
+    ProductId: 2493,
+    ProductName: "秋装新款时尚纯色连帽领口2014个性多系法腰带女修身短风衣",
+    ImagePath: "/Storage/Shop/1/Products/2493/1_50.png",
+    ProductPic: null,
+    ShopId: 0,
+    ShopName: null,
+    UserId: 0,
+    UserName: "selleradmin",
+    Email: null,
+    ConsultationContent: "173&nbsp;67",
+    ConsultationDate: "/Date(-62135596800000)/",
+    ConsultationDateStr: null,
+    ReplyContent: "",
+    ReplyDate: null,
+    Status: '没有',
+    Date: "2020-01-19 15:22:12",
+    Color: null,
+    Size: null,
+    Version: null,
+    CommentDateStr: "2019-05-06 10:19",
+    CommentContent: "无35464",
+    CommentMark: 5,
+  }
+]
+
+export default Datas

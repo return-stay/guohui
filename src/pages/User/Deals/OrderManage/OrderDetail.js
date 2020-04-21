@@ -1,0 +1,314 @@
+import React from 'react'
+
+import { Card, Icon, Table, Collapse, Modal, Steps, message } from 'antd'
+import { dismantleSearch } from '../../../../utils'
+import { OrderDetailApi } from '../../../../config/api'
+import request from '../../../../utils/request'
+import './index.less'
+const { Panel } = Collapse;
+const { Step } = Steps;
+export default class OrderDetail extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      info: { OrderDetails: [], express: {} },
+
+    }
+  }
+  componentDidMount() {
+    let obj = dismantleSearch(this)
+    this.setState({
+      ...obj
+    })
+    request({
+      url: OrderDetailApi + '/' + obj.id,
+      params: { md5Str: localStorage.getItem('authed') },
+    }).then(res => {
+      this.setState({
+        info: res.data
+      })
+    })
+  }
+
+  collapseChange = (e) => {
+    console.log(e)
+  }
+
+  showExpress = (e) => {
+    console.log(e)
+    if (this.state.info.express && this.state.info.express.data) {
+      this.logisticsChild.show()
+    } else {
+      message.warning('暂无物流详细信息')
+    }
+
+  }
+  render() {
+    const { info } = this.state
+    let payTypeText = ''
+    let payType = info.payType
+    if(payType === 'WX-JSAPI') {
+      payTypeText = '微信支付'
+    }else if(payType === 'WX-APP') {
+      payTypeText = '微信APP支付'
+    }else if(payType === 'ALI-PAY') {
+      payTypeText = '支付宝'
+    }else if(payType === 'BALANCE') {
+      payTypeText = '余额'
+    }else if(payType === 'TRANSFER') {
+      payTypeText = '转账'
+    }
+    return (
+      <div className="od-detail">
+        <div className="od-top">
+          <Card title={"订单信息：" + info.orderNo} style={{ flex: 2, border: 'none', marginRight: '20px' }}>
+            <div>
+              <div className="colo-item">
+                <span className="col-left-item">下单时间：</span>
+                <span>{info.createTime}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">支付时间：</span>
+                <span>{info.payTime}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">收货人信息：</span>
+                <span>{info.consignee}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">收货人手机号：</span>
+                <span>{info.mobile}</span>
+              </div>
+              <div className="colo-item" style={{ display: 'flex' }}>
+                <span className="col-left-item" style={{ flexShrink: 0 }}>收货人地址：</span>
+                <span>{info.address}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">买家留言：</span>
+                <span>{info.message}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">支付商户号：</span>
+                <span>{info.payFlowNumber}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">支付类型：</span>
+                <span>{payTypeText}</span>
+              </div>
+              <div className="colo-item">
+                <span className="col-left-item">支付流水号：</span>
+                <span>{info.payId}</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card title="订单状态" style={{ flex: 1, border: 'none', marginRight: '20px' }}>
+            <span style={{ color: "#f0c3c4", fontSize: 24 }}>{info.orderStatusText}</span>
+            {
+              false && <div>
+                <p style={{ color: "#666", fontSize: 24 }}>定金已支付</p>
+                <p style={{ color: "#f0c3c4", fontSize: 24 }}>尾款待支付</p>
+              </div>
+            }
+          </Card>
+          <Card title="订单金额" style={{ flex: 1, border: 'none', }}>
+            <span style={{ color: "#333", fontSize: 24 }}>￥{info.goodsPrice}</span>
+            {
+              false && <div>
+                <p style={{ color: "#333", fontSize: 24 }}>定金￥300</p>
+                <p style={{ color: "#f0c3c4", fontSize: 24 }}>尾款￥900</p>
+              </div>
+            }
+          </Card>
+        </div>
+        <div className="od-title">
+          <Icon type="file-text" /> 商品信息
+        </div>
+        <div className="order-list">
+          {
+            info.orderDetails && info.orderDetails.length > 0 && <OrderList dataSource={info.orderDetails} />
+          }
+        </div>
+
+        {/* <div className="od-title od-title-space">
+          <span>商铺信息</span>
+        </div>
+
+        <div style={{ padding: 20, border: '1px solid #ccc' }}>
+          <div>
+            <div className="colo-item">
+              <span className="col-left-item">提交时间：</span>
+              <span>{info.createTime}</span>
+            </div>
+        </div> */}
+        <div className="od-title od-title-space">
+          <span>物流信息</span>
+          <span className="od-title-right" onClick={this.showExpress}>查看物流信息</span>
+        </div>
+
+        <div style={{ padding: 20, border: '1px solid #ccc' }}>
+          <LogisticsDetails expData={{ expName: info.expName, express: info.express, }} />
+        </div>
+
+        <Collapse
+          bordered={false}
+          onChange={this.collapseChange}
+          expandIconPosition='right'
+        >
+          <Panel header="订单记录" key="2" style={{ marginTop: 20, border: 0 }}>
+            {
+              info.traces && info.traces.length > 0 && <OrderOperationLog dataSource={info.traces || []} />
+            }
+          </Panel>
+        </Collapse>
+        <ShowExpress express={info.express || {}} triggerRef={ref => this.logisticsChild = ref} />
+      </div>
+    )
+  }
+}
+
+
+const OrderList = (props) => {
+  const _columns = [
+    {
+      title: '商品编号',
+      key: 'goodsNo',
+      dataIndex: 'goodsNo',
+    },
+    {
+      title: '商品信息',
+      key: 'goodsName',
+      render(item) {
+        return (
+          <>
+            <div className="goods-name-item">
+              <img src={item.picUrl} style={{ width: 30, marginRight: 10 }} alt="图片" />{item.goodsName}
+            </div>
+          </>
+        )
+      }
+    },
+    {
+      title: '单价',
+      key: 'price',
+      dataIndex: 'price',
+    },
+    {
+      title: '购买数量',
+      key: 'number',
+      dataIndex: 'number',
+    },
+    {
+      title: '优惠',
+      key: 'comment',
+      dataIndex: 'comment',
+    },
+    {
+      title: '应付金额',
+      key: 'actualPrice',
+      dataIndex: 'actualPrice',
+    }
+  ]
+  const { dataSource } = props
+  console.log(dataSource)
+  return (
+    <Table
+      rowKey={record => record.orderDetailId}
+      dataSource={dataSource}
+      columns={_columns}
+      pagination={false} />
+  )
+}
+
+const LogisticsDetails = (props) => {
+  const expData = props.expData
+  console.log(expData)
+  let nu = expData.express && expData.express.nu && ''
+  return (<div>
+    <div className="colo-item">
+      <span className="col-left-item">物流公司：</span>
+      <span>{expData.expName}</span>
+    </div>
+    <div className="colo-item">
+      <span className="col-left-item">物流编号：</span>
+      <span>{nu}</span>
+    </div>
+  </div>)
+}
+
+
+// 物流详情
+class ShowExpress extends React.Component {
+  constructor() {
+    super()
+
+    this.state = {
+      visible: false
+    }
+  }
+  componentDidMount() {
+    this.props.triggerRef && this.props.triggerRef(this)
+  }
+  show = () => {
+    this.setState({
+      visible: true,
+    })
+  }
+  onCancel = () => {
+    this.setState({
+      visible: false,
+    })
+  }
+  render() {
+    const { visible } = this.state
+    const { express } = this.props
+    console.log(express)
+    return <Modal
+      visible={visible}
+      title="物流信息"
+      onCancel={this.onCancel}
+      footer={null}
+    >
+      <div className="local-modal">
+
+        <Steps progressDot direction="vertical">
+          {
+            express.data && express.data.map((item, index) => {
+              return <Step key={index} style={{ width: '100%' }} title={item.context} description={item.ftime} />
+            })
+          }
+        </Steps>
+      </div>
+    </Modal>
+  }
+}
+
+
+// 订单操作
+
+const OrderOperationLog = (props) => {
+  console.log(props)
+  const _columns = [
+    // {
+    //   title: '操作者',
+    //   key: 'orderId',
+    //   dataIndex: 'orderId',
+    // },
+    {
+      title: '时间',
+      key: 'traceTime',
+      dataIndex: 'traceTime',
+    },
+    {
+      title: '描述',
+      key: 'traceDetail',
+      dataIndex: 'traceDetail',
+    }
+  ]
+  const { dataSource } = props
+  return (
+    <Table dataSource={dataSource} columns={_columns} pagination={false} rowKey={rew => rew.id} />
+  )
+}
+
+

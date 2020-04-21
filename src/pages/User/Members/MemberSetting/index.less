@@ -1,0 +1,38 @@
+.bottom-btns {
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  width: 100%;
+}
+
+
+.s-box {
+  .ant-radio-button-wrapper:first-child {
+    border-radius: 0;
+  }
+  .ant-radio-button-wrapper {
+    border: 1px solid #fff;
+  }
+  .ant-radio-button-wrapper-checked{
+    border-left: 0;
+  }
+  .ant-radio-button-wrapper:not(:first-child)::before {
+    width: 0;
+  }
+  .ant-radio-button-wrapper-checked:not(:first-child)::before {
+    width: 0;
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    border: 1px solid #1890ff;
+    border-radius: 4px;
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+    border: none;
+  }
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+  .ant-radio-group {
+    line-height: 40px;
+  }
+}

@@ -1,0 +1,84 @@
+.om-box {
+  background-color: #fff;
+}
+
+// 订单详情样式
+
+.od-detail {
+  background-color: #fff;
+
+  .ant-collapse-icon-position-right > .ant-collapse-item > .ant-collapse-header {
+    background-color: #f9f9f9;
+  }
+
+  
+  .od-top {
+    display: flex;
+    p {
+      margin-bottom: 0;
+    }
+    &-left {
+      flex: 1;
+      display: flex;
+      &-title {
+        width: 100px;
+        font-size: 14px;
+        color: #6b6c6e;
+      }
+      &-cont {
+        flex: 1;
+      }
+    }
+  
+    &-right {
+      width: 300px;
+      text-align: right;
+      &-text {
+        text-align: left;
+        height: 36px;
+        font-size: 12px;
+        color: #6b6c6e;
+        &-left {
+          display: inline-block;
+          width: 120px;
+        }
+      }
+    }
+  }
+
+  .colo-item {
+    .col-left-item {
+      display: inline-block;
+      text-align: right;
+      height: 32px;
+      padding-right: 10px;
+    }
+  }
+
+  .od-title {
+    font-size: 16px;
+    color: #6b6c6e;
+    line-height: 18px;
+    padding: 18px 0 10px;
+    font-weight: bold;
+    background-color: #fff;
+  }
+
+  .od-title-space {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 20px;
+    cursor: pointer;
+  }
+
+  .od-title-right{
+    color: #afdad9;
+  }
+}
+
+.local-modal {
+  .ant-steps-dot .ant-steps-item-content, .ant-steps-dot.ant-steps-small .ant-steps-item-content {
+    width: 92%;
+  }
+}
