@@ -1,4 +1,4 @@
-  ### 匡时后台系统
+  ### 国惠后台系统
 
   存在问题
   分页和搜索放到一起不起作用
@@ -70,13 +70,3 @@
 4.  [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
 5.  码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
 6.  码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
-  
-
-
-主机名
-101.200.151.38
-用户名
-root
-密码
-Jindanke@168
-/www/wwwroot/zx.jindanke.cn
