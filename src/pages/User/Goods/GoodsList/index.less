@@ -196,3 +196,47 @@
     margin-bottom: 10px;
   }
 }
+
+
+.gl-table-th {
+  white-space: nowrap;
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  padding-right: 10px;
+  img {
+    height: 30px;
+    margin-right: 4px;
+  }
+  img, .gl-table-text {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .gl-table-text {
+    width: 190px;
+    text-overflow: -o-ellipsis-lastline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+}
+
+.sku-box {
+  display: flex;
+  align-items: center;
+  .spec-input {
+    width: 300px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  .price-input {
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+}

@@ -1,9 +1,8 @@
 import React from 'react'
-import { Button, Divider, Tabs, Modal, message } from 'antd'
+import { Button, Divider, Modal, message, Form, Input, Select, Cascader } from 'antd'
 import GtableEdit from '../../../../common/GtableEdit'
-import BaseForm from '../../../../common/BaseForm'
 import GoodsSetting from '../GoodsSetting'
-import { dismantleSearch } from '../../../../utils'
+import { dismantleSearch, getOptionsList } from '../../../../utils'
 import Gimage from '../../../../common/Gimage'
 import {
     CategoryFindAllCate,
@@ -17,7 +16,6 @@ import {
 import request from '../../../../utils/request'
 import AddGoods from './AddGoods'
 import './index.less'
-const { TabPane } = Tabs;
 export default class GoodsList extends React.Component {
     constructor() {
         super()
@@ -28,7 +26,7 @@ export default class GoodsList extends React.Component {
             isAddBtnShow: true,
             selectedRows: [],
             urls: {
-                list: '/product/search',
+                list: '/product/v1/search',
                 listMethod: 'POST',
                 add: '',
                 edit: '',
@@ -44,20 +42,18 @@ export default class GoodsList extends React.Component {
                 { value: '已下架', id: 2, type: 2 },
                 { value: '未发布', id: 3, type: 3 },
             ],
-            categoryList: [], //商品类目列表
             shopList: [], //店铺列表
         }
     }
 
     componentDidMount() {
-        this.getCategoryFindAllCate()
         let searchObj = dismantleSearch(this)
         this.setState({
             ...searchObj
         }, () => {
             this.tableChild.sortingParameters();
         })
-        this.getShopSearch()
+        // this.getShopSearch()
     }
 
 
@@ -69,10 +65,10 @@ export default class GoodsList extends React.Component {
                 pageSize: 10000,
                 pageNumber: 1,
             }
-        }).then(res=> {
-            if(res.code === 100 && res.data) {
+        }).then(res => {
+            if (res.code === 100 && res.data) {
                 let list = res.data.datas
-                for(let i =0;i<list.length;i++) {
+                for (let i = 0; i < list.length; i++) {
                     list[i].label = list[i].shopName
                     list[i].value = list[i].shopId
                 }
@@ -80,37 +76,6 @@ export default class GoodsList extends React.Component {
                     shopList: list
                 })
             }
-        })
-    }
-
-    getCategoryFindAllCate = () => {
-        let parentId = 0
-        let obj = {}
-        if (parentId) {
-            obj.parentId = parentId
-        }
-        request(
-            {
-                url: CategoryFindAllCate,
-                params: obj
-            }
-        ).then(res => {
-            let list = res.data[0].childList
-            for (let i = 0, len = list.length; i < len; i++) {
-                list[i].value = list[i].id
-                list[i].label = list[i].name
-                if (list[i].childList && list[i].childList.length > 0) {
-                    let childList = list[i].childList
-                    for (let j = 0; j < childList.length; j++) {
-                        childList[j].value = childList[j].id
-                        childList[j].label = childList[j].name
-                    }
-                    list[i].children = childList
-                }
-            }
-            this.setState({
-                categoryList: list
-            })
         })
     }
 
@@ -350,49 +315,40 @@ export default class GoodsList extends React.Component {
     }
 
     render() {
-        let { urls, titleList, isGoodsSetting, isAddBtnShow, categoryList, shopId, stateQuery, isAddGood, editProductId,shopList } = this.state;
+        let { urls, isGoodsSetting, isAddBtnShow, shopId, stateQuery, isAddGood, editProductId } = this.state;
         const _columns = (that) => {
             return [
                 {
                     title: '商品信息',
                     key: 'productName',
-                    width: 400,
+                    width: 300,
                     render(item) {
                         return (
-                            <div>
-                                <Gimage style={{ height: 30, marginRight: 4 }} src={item.productPicUrl} alt="商品图片" />
-                                <div style={{ display: 'inline-block' }}>{item.productName}</div>
+                            <div className="gl-table-th">
+                                <Gimage style={{ height: 30, marginRight: 4, display: 'inline-block' }} src={item.coverImage} alt="图片" />
+                                <span className="gl-table-text">{item.productName}</span>
                             </div>
                         )
                     }
                 },
                 {
-                    title: '类目',
-                    key: 'productCategoryId',
-                    width: 200,
-                    render(item) {
-                        let str = item.cateName + '/' + item.childCateName
+                    title: "商品主标签",
+                    key: 'majorLabels',
+                    dataIndex: 'majorLabels',
+                    width: 100,
+                    render(majorLabels) {
+                        let str = majorLabels.join("/")
                         return <span>{str}</span>
                     }
                 },
                 {
-                    title: '店铺信息',
-                    key: 'shopName',
-                    dataIndex: 'shopName',
-                    width: 200,
-                },
-                {
-                    title: '价格',
-                    key: 'currentPrice',
-                    dataIndex: 'currentPrice',
-                    width: 80,
-                    // sorter: true,
-                },
-                {
-                    title: '会员价',
-                    key: 'memberPrice',
-                    width: 80,
-                    dataIndex: 'memberPrice',
+                    title: '类目',
+                    key: 'categoryOneName',
+                    dataIndex: 'categoryOneName',
+                    width: 100,
+                    render(categoryOneName) {
+                        return <span>{categoryOneName}</span>
+                    }
                 },
                 {
                     title: '库存',
@@ -401,16 +357,33 @@ export default class GoodsList extends React.Component {
                     dataIndex: 'pstock',
                 },
                 {
-                    title: '销量',
-                    key: 'saleVolume',
-                    dataIndex: 'saleVolume',
-                    width: 80,
+                    title: '商品单位',
+                    key: 'unit',
+                    dataIndex: 'unit',
+                    width: 100,
                 },
                 {
                     title: '状态',
-                    key: 'statusStr',
-                    dataIndex: 'statusStr',
-                    width: 80,
+                    key: 'status',
+                    dataIndex: 'status',
+                    width: 100,
+                    render(status) {
+                        let str = ''
+                        switch (status) {
+                            case 0:
+                                str = '待上架'
+                                break;
+                            case 1:
+                                str = '以上架'
+                                break;
+                            case 2:
+                                str = '以下架'
+                                break;
+                            default:
+                                str = '删除'
+                        }
+                        return <span>{str}</span>
+                    }
                 },
                 {
                     title: '创建时间',
@@ -418,6 +391,7 @@ export default class GoodsList extends React.Component {
                     dataIndex: 'createTimeStr',
                     width: 200,
                 },
+
                 {
                     title: '操作',
                     key: 'action',
@@ -436,30 +410,20 @@ export default class GoodsList extends React.Component {
 
                                 {item.status === 1 && <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'off')}>下架</span>}
 
-
-                                <Divider type="vertical" />
-                                <span style={spanStyle} onClick={(e) => that.handleDelete(e, item)}>删除</span>
+                                {/* <Divider type="vertical" /> */}
+                                {/* <span style={spanStyle} onClick={(e) => that.handleDelete(e, item)}>删除</span> */}
                             </>
                         )
                     }
                 }
             ]
         }
-        const searchData = [
-            { type: 'cascader', field: 'productCategoryIds', width: '170px', label: '商品类目', options: categoryList, placeholder: '请选择商品类目' },
-            { type: 'input', field: 'productName', label: '商品名称', placeholder: '请输入商品名称' },
-            { type: 'input', field: 'childCateId', label: '商品标签', placeholder: '请输入商品标签' },
-            { type: 'select', field: 'shopId', width: '170px', label: '所属店铺', list: shopList, placeholder: '请选择所属店铺' },
-            { type: 'inputnumbergroup', field: 'price', label: '销售价格', min: 'minPrice', max: 'maxPrice' },
-            { type: 'inputnumbergroup', field: 'stock', label: '库存', min: 'minStock', max: 'maxStock' },
-            { type: 'inputnumbergroup', field: 'salesVolume', label: '销量', min: 'minSalesVolume', max: 'maxSalesVolume' },
-        ]
-        const operations = <Button icon="delete" onClick={this.goGoodsRecycleBin}>商品回收站</Button>;
+        // const operations = <Button icon="delete" onClick={this.goGoodsRecycleBin}>商品回收站</Button>;
 
         return (
             <div>
                 <div style={{ display: !isAddGood ? 'block' : 'none' }} >
-                    {
+                    {/* {
                         titleList && titleList.length > 0 && (
                             <div >
                                 <Tabs defaultActiveKey='0' onChange={this.tabCallback} tabBarExtraContent={operations}>
@@ -470,9 +434,9 @@ export default class GoodsList extends React.Component {
 
                             </div>
                         )
-                    }
-                    <div style={{ padding: '10px' }}>
-                        <BaseForm data={searchData} handleSearch={this.search} />
+                    } */}
+                    <div style={{ paddingBottom: 10 }}>
+                        <SearchGoodsForm handleSearch={this.search} />
                     </div>
 
                     <div>
@@ -483,16 +447,15 @@ export default class GoodsList extends React.Component {
                     </div>
                     {
                         isGoodsSetting ? <GtableEdit
-                            size="small"
                             didMountShow={false}
-                            rowKey={record => record.productSpecId}
+                            rowKey={record => record.productId}
                             triggerRef={ref => { this.tableChild = ref }}
                             urls={urls}
                             columns={_columns}
                             selectChange={this.selectChange}
                             onChange={this.handleChange}
                             pagination={true}
-                            query={{ sortBy: 1, deleted: 0, shopId: shopId, ...stateQuery }}
+                            query={{ sortBy: 1, sortField: 'all', shopId: shopId, ...stateQuery }}
                         /> : <GoodsSetting />
                     }
                 </div>
@@ -506,3 +469,113 @@ export default class GoodsList extends React.Component {
         )
     }
 }
+
+
+
+class SearchGoods extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            categoryList: []
+        }
+    }
+    componentDidMount() {
+        this.getCategoryFindAllCate()
+    }
+
+    getCategoryFindAllCate = (parentId, callback) => {
+        let obj = {}
+        obj.parentId = parentId || 0
+        request({
+            url: CategoryFindAllCate,
+            params: obj
+        }).then(res => {
+            let list = res.data
+            for (let i = 0, len = list.length; i < len; i++) {
+                list[i].value = list[i].id
+                list[i].label = list[i].name
+                if (parentId) {
+                    list[i].isLeaf = true
+                } else {
+                    list[i].isLeaf = false
+                }
+            }
+            if (parentId) {
+                callback && callback(list)
+            } else {
+                this.setState({
+                    categoryList: list
+                })
+            }
+        })
+    }
+
+    loadData = (selectedOptions) => {
+        console.log(selectedOptions)
+        const targetOption = selectedOptions[selectedOptions.length - 1];
+        targetOption.loading = true;
+
+        const that = this
+        this.getCategoryFindAllCate(selectedOptions[0].id, (list) => {
+            targetOption.loading = false;
+            targetOption.children = list
+            that.setState({
+                categoryList: [...this.state.categoryList],
+            });
+        })
+    }
+
+    onCascaderChange = (value) => {
+        console.log(value)
+        this.setState({
+            categoryOneId: value[0],
+            categoryTwoId: value[1]
+        })
+    }
+
+    handleFilterSubmit = () => {
+        this.props.form.validateFields((err, fieldsValue) => {
+            this.props.handleSearch(fieldsValue);
+        })
+    }
+    reset = () => {
+        this.props.form.resetFields();
+    }
+    render() {
+        const { getFieldDecorator } = this.props.form;
+        const { categoryList } = this.state
+        return <div>
+            <Form layout='inline'>
+
+                <Form.Item label="商品名称" >
+                    {getFieldDecorator('productName', { valuePropName: 'value' })(<Input style={{ width: 170 }} placeholder='请输入名称' />)}
+                </Form.Item>
+
+                <Form.Item label="商品类目">
+                    {getFieldDecorator('productCategoryId', { valuePropName: 'value' })(
+                        <Cascader style={{ width: 170 }} options={categoryList} changeOnSelect loadData={this.loadData} onChange={this.onCascaderChange} placeholder="请选择类目" />
+                    )}
+                </Form.Item>
+
+                <Form.Item label="所属店铺" >
+                    {getFieldDecorator('shopId', { valuePropName: 'value' })(
+                        <Select style={{ width: 170 }} placeholder='请选择所属店铺'>
+                            {getOptionsList([{
+                                id: 1,
+                                value: 1,
+                                label: '商铺'
+                            }])}
+                        </Select>
+                    )}
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" style={{ margin: '0 20px' }} onClick={this.handleFilterSubmit}>搜索</Button>
+                    <Button onClick={this.reset}>重置</Button>
+                </Form.Item>
+            </Form>
+
+        </div>
+    }
+}
+
+const SearchGoodsForm = Form.create()(SearchGoods)

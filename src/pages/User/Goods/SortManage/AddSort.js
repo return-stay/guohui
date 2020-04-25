@@ -1,6 +1,8 @@
 import React from 'react'
-import { Modal, Button, Form, Select, Input, Icon, message, Upload } from 'antd'
-
+import { Modal, Button, Form, Select, Input, InputNumber } from 'antd'
+import request from '../../../../utils/request'
+import Gupload from '../../../../common/Gupload'
+import { CategoryFindAllCate, CateAddCate, CateUpdateCate, } from '../../../../config/api'
 import './index.less'
 const { Option } = Select;
 class AddSort extends React.Component {
@@ -8,20 +10,64 @@ class AddSort extends React.Component {
     visible: false,
     loading: false,
     imgLoading: false,
+    selectArr: [],
+    isParentShow: false,
   }
   componentDidMount() {
     this.props.triggerRef(this)
+    this.getList()
+  }
+
+  //初始列表
+  getList = (id = 0) => {
+    request({
+      url: CategoryFindAllCate,
+      params: {
+        parentId: id
+      }
+    }).then(res => {
+      console.log(res)
+      // let list = this.actionList(res.data[0].childList)
+      let list = res.data;
+      console.log(list)
+      for (let i = 0; i < list.length; i++) {
+        list[i].label = list[i].id
+        list[i].value = list[i].name
+      }
+      this.setState({
+        selectArr: list
+      })
+    })
   }
   handleOk = e => {
     console.log(e)
+    const that = this
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.setState({ loading: true });
-        // console.log('Received values of form: ', values);
-        console.log(this.state.imageUrl)
-        setTimeout(() => {
-          this.setState({ loading: false, visible: false });
-        }, 3000);
+        that.setState({ loading: true });
+        let url = ''
+        let params = values
+
+        if (that.state.isEdit) {
+          url = CateUpdateCate
+          params.id = that.state.rows.id
+        } else {
+          url = CateAddCate
+          
+        }
+
+        request({
+          url: url,
+          method: 'post',
+          data: params
+        }).then(res => {
+          console.log(res)
+
+          that.handleCancel()
+
+
+          that.props.successCallback()
+        })
       }
     });
 
@@ -30,6 +76,7 @@ class AddSort extends React.Component {
   handleCancel = e => {
     this.setState({
       visible: false,
+      loading: false,
     });
   };
 
@@ -39,55 +86,82 @@ class AddSort extends React.Component {
     });
   }
 
-  add = () => {
+  add = (rows) => {
+    console.log(rows)
     this.setState({
-      title: '新增'
+      title: '新增',
+      isEdit: false,
+      colorPicUrl: '',
+      ordinaryPicUrl: '',
+      rows: null,
+      isParentShow: rows.isType === 'parent' ? true : false
     });
     this.modalShow()
+
+    setTimeout(() => {
+      if (rows.isType === 'parent') {
+        this.props.form.setFieldsValue({
+          parentId: rows.id
+        })
+      } else {
+        this.props.form.setFieldsValue({
+          parentId: null
+        })
+      }
+    }, 0);
+
   }
-  edit = () => {
+  edit = (rows) => {
     this.setState({
-      title: '编辑'
+      title: '编辑',
+      isEdit: true,
+      colorPicUrl: rows.colorPicUrl,
+      ordinaryPicUrl: rows.ordinaryPicUrl,
+      rows: rows,
     });
     this.modalShow()
     setTimeout(() => {
+
       this.props.form.setFieldsValue({
-        inputName: '我是编辑的设置内容'
+        name: rows.name,
+        sort: rows.sort || 0,
+        colorPicUrl: rows.colorPicUrl,
+        ordinaryPicUrl: rows.ordinaryPicUrl,
       })
     }, 0);
   }
 
-  handleChange = info => {
-    if (info.file.status === 'uploading') {
-      this.setState({ imgLoading: true });
-      return;
+  uploadSuccessCallback = (imgurl, type) => {
+    console.log(imgurl)
+    let obj = {}
+    switch (type) {
+      case 'colorPicUrl':
+        obj.colorPicUrl = imgurl
+        this.props.form.setFieldsValue({
+          colorPicUrl: imgurl
+        })
+        break;
+      case 'ordinaryPicUrl':
+        obj.ordinaryPicUrl = imgurl
+        this.props.form.setFieldsValue({
+          ordinaryPicUrl: imgurl
+        })
+        break;
+      default:
+        obj = {}
     }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl =>
-        this.setState({
-          imageUrl,
-          imgLoading: false,
-        }),
-      );
-    }
-  };
+    this.setState({
+      ...obj
+    })
+  }
 
   render() {
-    const uploadButton = (
-      <div>
-        <Icon type={this.state.imgLoading ? 'loading' : 'plus'} />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
-    const { visible, loading, title, imageUrl } = this.state
+    const { visible, loading, title, colorPicUrl, ordinaryPicUrl, selectArr, isParentShow } = this.state
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
     };
-
-    const selectArr = [{ key: '1', value: '一级分类', id: 1 }, { key: '2', value: '二级分类', id: 2 }, { key: '3', value: '三级分类', id: 3 }]
     return (
       <Modal
         title={title}
@@ -106,49 +180,49 @@ class AddSort extends React.Component {
         <Form {...formItemLayout}>
 
           <Form.Item label="名称">
-            {getFieldDecorator('inputName', { valuePropName: 'value', rules: [{ required: true, message: '请输入名称' }] })(<Input placeholder='请输入名称' />)}
+            {getFieldDecorator('name', { valuePropName: 'value', rules: [{ required: true, message: '请输入名称' }] })(<Input style={{ width: '100%' }} placeholder='请输入名称' />)}
           </Form.Item>
 
-          <Form.Item label="图片">
+          {
+            isParentShow && <Form.Item label="选择父类目">
+              {getFieldDecorator('parentId', { valuePropName: 'value' })(<Select style={{ width: '100%' }}>
+                {
+                  selectArr.map((item) => {
+                    return BaseOption(item)
+                  })
+                }
+              </Select>)}
+            </Form.Item>
+          }
 
-            <div className="img-box">
-              {getFieldDecorator('imageUrl', { valuePropName: 'upload' })(<Upload
-                name="avatar"
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                beforeUpload={beforeUpload}
-                onChange={this.handleChange}
-              >
-                {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-              </Upload>)}
 
-              <span className='img-box-text'>建议尺寸128*128</span>
 
+          <Form.Item label="彩色图片">
+            {
+              getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
+                <Gupload file={colorPicUrl} uploadButtonText="上传图片" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
+              )
+            }
+          </Form.Item>
+
+          <Form.Item label="黑白图片">
+            {
+              getFieldDecorator('ordinaryPicUrl', { valuePropName: 'upload' })(
+                <Gupload file={ordinaryPicUrl} uploadButtonText="上传图片" success={img => this.uploadSuccessCallback(img, 'ordinaryPicUrl')} />
+              )
+            }
+          </Form.Item>
+          <Form.Item label="排序">
+            <div>
+              {getFieldDecorator('sort', { valuePropName: 'value', initialValue: 0 })(
+                <InputNumber style={{ width: '40%' }} placeholder='请输入排序' />
+              )}
+              <span style={{ fontSize: 10, color: 'red', marginLeft: 8 }}>提示：数值越大权重越高</span>
             </div>
-
           </Form.Item>
 
-          {/* <Form.Item label="上级分类">
-            {getFieldDecorator('shangjifenlei', { valuePropName: 'value', initialValue: 1 })(<Select>
-              {
-                selectArr.map((item) => {
-                  return BaseOption(item)
-                })
-              }
-            </Select>)}
-          </Form.Item> */}
 
-          <Form.Item label="选择类型">
-            {getFieldDecorator('xuanzeleixing', { valuePropName: 'value', initialValue: 2, rules: [{ required: true, message: '请选择类型' }] })(<Select>
-              {
-                selectArr.map((item) => {
-                  return BaseOption(item)
-                })
-              }
-            </Select>)}
-          </Form.Item>
+
         </Form>
       </Modal>
     )
@@ -160,23 +234,4 @@ export default Form.create()(AddSort)
 
 const BaseOption = (item) => {
   return <Option value={item.id} key={item.id}>{item.value}</Option>
-}
-
-
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
-
-function beforeUpload(file) {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
 }

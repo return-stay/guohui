@@ -12,7 +12,7 @@ class FilterForm extends React.Component {
         const list = [];
         data.forEach((item, index) => {
             const { type, field, label, initialValue, rules, width, placeholder, disabled, beginTime, EndTime, options,
-                min, minValue, max, maxValue } = item;
+                min, minValue, max, maxValue,changeOnSelect } = item;
             switch (type) {
                 case 'input':
                     const inputItem = <FormItem key={field} label={label}>
@@ -93,7 +93,7 @@ class FilterForm extends React.Component {
                         {getFieldDecorator(field, {
                             initialValue,
                         })(
-                            <Cascader style={{ width }} options={options} disabled={disabled} placeholder={placeholder}></Cascader>
+                            <Cascader style={{ width }} options={options} changeOnSelect={changeOnSelect || false} disabled={disabled} placeholder={placeholder}></Cascader>
                         )}
                     </FormItem>
                     list.push(cascaderItem);

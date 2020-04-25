@@ -110,7 +110,15 @@ class SortManage extends React.Component {
         width: '25%',
       },
       {
-        title: '分类图片',
+        title: '彩色图片',
+        dataIndex: 'colorPicUrl',
+        key: 'colorPicUrl',
+        render(ordinaryPicUrl) {
+          return <img src={ordinaryPicUrl} style={{ height: 30 }} alt="图片" />
+        }
+      },
+      {
+        title: '黑白图片',
         dataIndex: 'ordinaryPicUrl',
         key: 'ordinaryPicUrl',
         render(ordinaryPicUrl) {
@@ -118,22 +126,9 @@ class SortManage extends React.Component {
         }
       },
       {
-        title: '是否显示',
-        dataIndex: 'isShow',
-        key: 'isShow',
-        render(isShow) {
-          return <span>是</span>
-        }
-      },
-      {
         title: '排序',
         dataIndex: 'sort',
         key: 'sort',
-      },
-      {
-        title: '修改时间',
-        dataIndex: 'editTime',
-        key: 'editTime',
       },
       {
         title: '操作',
@@ -143,6 +138,12 @@ class SortManage extends React.Component {
         render: (item) => {
           return (
             <div style={{ textAlign: 'center' }}>
+              {
+                item.isType === 'parent' && <>
+                  <span style={{ color: '#1890ff' }} onClick={(e) => { this.handleAdd(item) }}>添加</span>
+                  <Divider type="vertical" />
+                </>
+              }
               <span style={{ color: '#1890ff' }} onClick={(e) => { this.edit(item) }}>编辑</span>
               <Divider type="vertical" />
               <span style={{ color: '#1890ff' }} onClick={() => { this.handleDelete(item) }}>删除</span>
@@ -168,30 +169,43 @@ class SortManage extends React.Component {
   }
 
   //初始列表
-  getList = (options) => {
+  getList = (id = 0, callback) => {
     request({
       url: CategoryFindAllCate,
+      params: {
+        parentId: id
+      }
     }).then(res => {
       console.log(res)
-      let list = this.actionList(res.data[0].childList)
+      // let list = this.actionList(res.data[0].childList)
+      let list = res.data;
       console.log(list)
-      this.setState({
-        dataSource: list
-      })
-      // if (res && res.data && res.data.datas) {
-      //   let dataSource = res.data.datas.map((item, index) => {
-      //     item.key = index;
-      //     return item;
-      //   });
-      //   console.log(dataSource)
-      //   this.setState({
-      //     dataSource,
-      //     pagination: this.pagination(res.data, (current) => {
-      //       this.params.page = 10;
-      //     })
-      //   })
-      // }
+      if (id) {
+        callback && callback(list)
+      } else {
+        this.setState({
+          dataSource: list
+        }, () => {
+          this.getListChild()
+        })
+      }
     })
+  }
+
+  getListChild = () => {
+    let list = this.state.dataSource
+
+    for (let i = 0; i < list.length; i++) {
+      list[i].isType = 'parent'
+      this.getList(list[i].id, (childs) => {
+        if (childs && childs.length > 0) {
+          list[i].children = childs
+          this.setState({
+            dataSource: list
+          })
+        }
+      })
+    }
   }
 
   actionList = (arr) => {
@@ -223,8 +237,11 @@ class SortManage extends React.Component {
     }
   }
 
-  onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys });
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log(selectedRows)
+    let keys = [selectedRowKeys[selectedRowKeys.length - 1]]
+    let rows = [selectedRows[selectedRows.length - 1]]
+    this.setState({ selectedRowKeys: keys, selectedRows: rows });
   }
 
   edit = item => {
@@ -241,8 +258,8 @@ class SortManage extends React.Component {
     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
   };
 
-  handleAdd = () => {
-    this.child.add()
+  handleAdd = (item) => {
+    this.child.add(item)
   };
 
   handleSave = row => {
@@ -302,7 +319,7 @@ class SortManage extends React.Component {
         // pagination={this.pagination(dataSource)}
         />
 
-        <AddSort triggerRef={this.bindRef} />
+        <AddSort triggerRef={this.bindRef} successCallback={this.getList} />
 
 
       </div>

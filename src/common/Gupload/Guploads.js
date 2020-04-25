@@ -27,12 +27,10 @@ class Guploads extends React.Component {
         status: 'done',
         response: {
           code: 100,
-          data: [
-            {
-              attachmentId: '0',
-              path: imgarr[i]
-            }
-          ]
+          data: {
+            attachmentId: '0',
+            imageUrl: imgarr[i]
+          }
         },
         thumbUrl: imgarr[i]
       })
@@ -49,7 +47,7 @@ class Guploads extends React.Component {
     let imgArr = []
     for (let i = 0; i < fileList.length; i++) {
       if (fileList[i].response && fileList[i].response.code === 100) {
-        imgArr.push(fileList[i].response.data[0].path)
+        imgArr.push(fileList[i].response.data.imageUrl)
       } else {
         if (imgArr[imgArr.length] !== fileList[i].uid) {
           imgArr.push(fileList[i].uid)
@@ -63,7 +61,7 @@ class Guploads extends React.Component {
     this.setState({ fileList })
   }
   removeUpload = (info) => {
-    let imgid = info.response.data[0].attachmentId
+    let imgid = info.response.data.attachmentId
     if (imgid === '0') {
       let fileList = this.state.fileList
       for (let i = 0; i < fileList.length; i++) {
@@ -105,7 +103,7 @@ class Guploads extends React.Component {
   };
   render() {
     const { loading, fileList, previewVisible, previewImage } = this.state
-    const { data, uploadButtonText, displayFlex,fileLength } = this.props
+    const { data, uploadButtonText, displayFlex, fileLength } = this.props
     const uploadButton = (
       <div>
         <Icon style={{ fontSize: 30 }} type={loading ? 'loading' : 'plus'} />
@@ -117,7 +115,7 @@ class Guploads extends React.Component {
       <>
         <div className={displayFlex ? 'display-flex gupload' : 'gupload'}>
           <Upload
-            name="files"
+            name="file"
             data={data}
             action={UploadApiMd5}
             listType="picture-card"
@@ -146,7 +144,6 @@ Guploads.propTypes = {
 }
 
 Guploads.defaultProps = {
-  data: { maxSize: 15 },
   uploadButtonText: 'Upload',
   displayFlex: false,
   fileLength: 3,

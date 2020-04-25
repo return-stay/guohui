@@ -3,7 +3,7 @@ import { Form, Row, Col, Card } from 'antd'
 import { dismantleSearch } from '../../../../utils'
 import Gimage from '../../../../common/Gimage'
 import request from '../../../../utils/request'
-import { ProductDetail, CategoryQueryProductIdAttributes } from '../../../../config/api'
+import { ProductDetail } from '../../../../config/api'
 import '../GoodsList/index.less'
 
 class GoodsInfo extends React.Component {
@@ -14,13 +14,11 @@ class GoodsInfo extends React.Component {
       title: 'lll',
       majorLabels: [], //商品主标签
       minorLabels: [], //商品副标题
-      groupSpecsPrams: [], //商品规格
       commonSpecList: [],
-      commodityParameters: [],
+      skuList: [],
       productPicUrl: '',
       productPicUrlList: [],
       videoPic: '',//视频地址
-      productAttribute: [],
     }
   }
   componentDidMount() {
@@ -35,26 +33,12 @@ class GoodsInfo extends React.Component {
     request({
       url: ProductDetail,
       params: {
-        productId: id
+        id: id,
+        token: localStorage.getItem('authed'),
       }
     }).then(res => {
       console.log(res)
       let resdata = res.data
-
-      let commodityParameters = resdata.specDetailList || [];
-
-      for (let i = 0; i < commodityParameters.length; i++) {
-        commodityParameters[i].specList = commodityParameters[i].specsParams.split(',')
-      }
-
-      let commonSpecList = resdata.commonSpecList
-      let groupSpecsPrams = []
-      for (let j = 0; j < commonSpecList.length; j++) {
-        groupSpecsPrams.push({
-          key: j,
-          value: commonSpecList[j].groupName
-        })
-      }
 
       let productPicUrl = ''
       let productPicUrlList = []
@@ -78,34 +62,19 @@ class GoodsInfo extends React.Component {
         info: resdata,
         majorLabels: resdata.majorLabels || [],
         minorLabels: resdata.minorLabels || [],
-        groupSpecsPrams,
-        commodityParameters,
+        skuList: resdata.skuList,
         productPicUrl,
         productPicUrlList,
       })
     })
-
-    this.getCategoryQueryProductIdAttributes(id)
   }
 
-  getCategoryQueryProductIdAttributes = (id) => {
-    request({
-      url: CategoryQueryProductIdAttributes,
-      params: {
-        productid: id
-      }
-    }).then(res => {
-      this.setState({
-        productAttribute: res.data || []
-      })
-    })
-  }
   render() {
     const formInfoLayout = {
       labelCol: { span: 0 },
       wrapperCol: { span: 24 },
     }
-    const { info, majorLabels, minorLabels, groupSpecsPrams, commodityParameters, productPicUrlList, productPicUrl, videoPic, productAttribute } = this.state
+    const { info, majorLabels, minorLabels, skuList, productPicUrlList, productPicUrl, videoPic } = this.state
     return (
       <div className="goods-info add-goods-box">
         <Form>
@@ -124,7 +93,8 @@ class GoodsInfo extends React.Component {
                 <div className="col-width">
                   <Form.Item label=" " colon={false} {...formInfoLayout}>
                     <p>商品类目：</p>
-                    <span>{info.cateName} / {info.childCateName}</span>
+                    {/* <span>{info.categoryOneName} / {info.childCateName}</span> */}
+                    <span>{info.categoryOneName}</span>
                   </Form.Item>
                 </div>
               </Col>
@@ -179,8 +149,6 @@ class GoodsInfo extends React.Component {
             </Row>
           </Card>
 
-
-
           <Card title="商品配置" bordered={false}>
             <Row >
               <Col span={8}>
@@ -192,57 +160,10 @@ class GoodsInfo extends React.Component {
               <Col span={8}>
                 <div className="col-width">
                   <span className="col-title">推荐类型：</span>
-                  <span>{info.saleType === 0 ? '非精选' : '精选'}</span>
+                  <span>{info.recommendation === 0 ? '不推荐' : '推荐'}</span>
                 </div>
               </Col>
-              <Col span={8}>
-                <div className="col-width">
-                  <span className="col-title">孤品标识： </span>
-                  <span>{info.sole === 0 ? '非孤品' : '孤品'}</span>
-                </div>
-              </Col>
-            </Row>
 
-            <Row>
-              <Col span={8}>
-                {
-                  info.saleType === 1 && <span>{info.saleStartTime}~{info.saleEndTime}</span>
-                }
-              </Col>
-              <Col span={8}>
-                <div className="col-width">
-                  <span className="col-title">名人佳作：</span>
-                  <span>{info.famous === 0 ? '非名人佳作' : '名人佳作'}</span>
-                </div>
-              </Col>
-              <Col span={8}>
-                <div className="col-width">
-                  <span className="col-title">推荐：</span>
-                  <span>{info.recommendation === 0 ? '不是推荐' : '推荐'}</span>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <div className="col-width">
-                  <span className="col-title">是否自营：</span>
-                  <span>{info.selfSupport === 0 ? '非自营' : '自营'}</span>
-                </div>
-              </Col>
-              <Col span={8}>
-                <div className="col-width">
-                  <span className="col-title">必买优品：</span>
-                  <span>{info.quality === 0 ? '非必买优品' : '必买优品'}</span>
-                </div>
-              </Col>
-              <Col span={8}>
-                <div className="col-width">
-                  <span className="col-title">新人必买：</span>
-                  <span>{info.rookie === 0 ? '不是新人必买' : '新人必买'}</span>
-                </div>
-              </Col>
-            </Row>
-            <Row>
               <Col span={8}>
                 <div className="col-width col-width-other">
                   <span className="col-title">运费： </span>
@@ -250,39 +171,17 @@ class GoodsInfo extends React.Component {
                 </div>
               </Col>
             </Row>
-          </Card>
 
-          <Card title="底卡信息" bordered={false} >
-            <Row style={{ marginBottom: 20 }}>
-              {
-                productAttribute.map(item => {
-                  return (
-                    <Col span={6} key={item.id} style={{ marginBottom: 10 }}>
-                      <div className="col-width-card">
-                        <span className="col-title">{item.name}：</span>
-                        <span>{item.value}</span>
-                      </div>
-                    </Col>
-                  )
-                })
-              }
+            <Row>
+              <Col span={16}>
+                {
+                  info.saleType === 1 && <span>{info.saleStartTime}~{info.saleEndTime}</span>
+                }
+              </Col>
             </Row>
           </Card>
 
           <Card title="商品规格" bordered={false}>
-            <Row style={{ marginBottom: 20 }}>
-              <Col span={24}>
-                <div className="col-width-other">
-                  <span className="col-title">商品规格： </span>
-                  <div style={{ display: 'flex', alignItems: 'center', height: 39, }}>
-                    {
-                      groupSpecsPrams.map((item, index) => {
-                        return <span className="label-class group-label-class" key={index}>{item.value}</span>
-                      })
-                    }
-                  </div> </div>
-              </Col>
-            </Row>
             <Row>
               <Col span={24}>
                 <p style={{ width: '100%', color: '#333', fontWeight: 500 }}>商品参数：</p>
@@ -290,21 +189,18 @@ class GoodsInfo extends React.Component {
                   <Col span={24}>
                     <div className="params-box">
                       {
-                        commodityParameters.map((item, index) => {
+                        skuList.map((item, index) => {
 
                           return item && (
                             <div className="params-item" key={item.indexes}>
                               <span className="params-item-title">参数{index + 1}：</span>
-                              {
-                                item.specList.map((specItem, i) => {
-                                  return <span className="label-class" key={i}>{specItem}</span>
-                                })
-                              }
+                              <span className="label-class">{item.specParam}</span>
                               <span className="params-item-bd"></span>
-                              <span className="label-class price-class">市场价 ￥{item.marketPrice}</span>
-                              <span className="label-class price-class">现价 ￥{item.currentPrice}</span>
                               <span className="label-class">原价 ￥{item.originalPrice}</span>
-                              <span className="label-class">会员价 ￥{item.memberPrice}</span>
+                              <span className="label-class price-class">售价 ￥{item.productPrice}</span>
+                              {/* <span className="label-class price-class">现价 ￥{item.currentPrice}</span>
+                              <span className="label-class">原价 ￥{item.originalPrice}</span>
+                              <span className="label-class">会员价 ￥{item.memberPrice}</span> */}
                               <div className="params-item-repertory">
                                 <span>商品库存：</span>
                                 <span>{item.stock || null}</span>
@@ -366,7 +262,7 @@ class GoodsInfo extends React.Component {
               </Col>
               <Col span={24}>
                 <div style={{ display: 'flex', paddingBottom: 40 }}>
-                  <div dangerouslySetInnerHTML={{ __html: info.detail }}></div>
+                  <div dangerouslySetInnerHTML={{ __html: info.productDetail }}></div>
                 </div>
               </Col>
             </Row>

@@ -177,7 +177,7 @@ class GtableEdit extends React.Component {
         data[sortField] = this.state.sortOrder === "ascend" ? 0 : 1
       }
 
-      options.params = { md5Str: localStorage.getItem('authed') }
+      // options.params = { md5Str: localStorage.getItem('authed') }
 
       options.data = data
       // options.data = data
@@ -193,7 +193,7 @@ class GtableEdit extends React.Component {
     request(options)
       .then(res => {
         if (res && res.data && res.data) {
-          let datas = res.data.datas ? res.data.datas : res.data
+          let datas = res.data.dataList ? res.data.dataList : res.data
           let dataSource = datas.map((item, index) => {
             item.key = index;
             return item;
@@ -547,7 +547,7 @@ GtableEdit.defaultProps = {
   didMountShow: true, //是否在componentDidMount 的时候加载列表
   isRowSelection: true,
   bordered: false,
-  size: 'small',
+  size: 'middle',
   rowKey: record => record.Id,
   cancelPopText: '您确认要删除此条数据吗？',
   isTitleTabsShow: true,

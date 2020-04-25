@@ -34,8 +34,8 @@ class GVideoUpload extends React.Component {
 
       let response = file.response
       if (response.code === 100) {
-        let img = response.data[0].path
-        let attachmentId = response.data[0].attachmentId
+        let img = response.data.imageUrl
+        let attachmentId = response.data.attachmentId
         this.setState({
           imageUrl: img,
           loading: false,
@@ -82,7 +82,7 @@ class GVideoUpload extends React.Component {
     return (
       <div className="gupload">
         <Upload
-          name="files"
+          name="file"
           data={data}
           action={UploadApiMd5}
           listType="picture-card"
@@ -115,7 +115,6 @@ GVideoUpload.propTypes = {
 }
 
 GVideoUpload.defaultProps = {
-  data: { maxSize: 10 },
   uploadButtonText: 'Upload',
   className: 'avatar-uploader',
   iconStyle: { fontSize: 30 }

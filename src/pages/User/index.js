@@ -6,8 +6,8 @@ import connect from '../../utils/connect'
 import MyCenter from './MyCenter'
 import { getMenuItem, filterRoutes } from '../../utils'
 import { Layout, Menu, Icon, Tooltip } from 'antd'
-import logo from '../../asset/login/logo.png'
-import logo_text_zh from '../../asset/login/logo_text_zh.png'
+// import logo from '../../asset/login/logo
+
 // import logo_text_en from '../../asset/login/logo_text_en.png'
 // import { recursionRouterTwo } from '../../utils/recursion-router'
 const { Header, Content, Sider } = Layout
@@ -188,7 +188,8 @@ class LeftMeun extends React.Component {
 
                 <div className="left-menu-box">
                     <div className="logo-text">
-                        <img src={logo_text_zh} alt="logo" />
+                        {/* <img src={logo_text_zh} alt="logo" /> */}
+                        <p style={{ color: '#fff' }}>国惠</p>
                     </div>
                     {
                         permissionList.map((item, index) => {
@@ -214,20 +215,21 @@ class LeftMeun extends React.Component {
                                     <p>在线</p>
                                 </> : <img src={logo} alt="logo" />
                         } */}
-                    <img src={logo} alt="logo" />
+                    {/* <img src={logo} alt="logo" /> */}
+                    <div>国惠</div>
                 </div>
 
                 {
-                    (menuChild && menuChild.length >0) && <Sider theme="light" collapsible style={{ height: '100vh', overflow: 'auto' }} width={200} className="sider-custom" collapsed={collapsed} onCollapse={this.onCollapse}>
+                    (menuChild && menuChild.length > 0) && <Sider theme="light" collapsible style={{ height: '100vh', overflow: 'auto' }} width={200} className="sider-custom" collapsed={collapsed} onCollapse={this.onCollapse}>
 
-                    <Menu theme="light" mode="inline" defaultOpenKeys={defaultOpenKeys} selectedKeys={[defaultOpenKeys[1]]} style={{ paddingTop: 70, borderRight: 'none' }}>
-                        {
-                            menuChild && getMenuItem(menuChild)
-                        }
-                    </Menu>
-                </Sider>
+                        <Menu theme="light" mode="inline" defaultOpenKeys={defaultOpenKeys} selectedKeys={[defaultOpenKeys[1]]} style={{ paddingTop: 70, borderRight: 'none' }}>
+                            {
+                                menuChild && getMenuItem(menuChild)
+                            }
+                        </Menu>
+                    </Sider>
                 }
-                
+
             </div>
 
         )

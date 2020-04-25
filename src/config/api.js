@@ -6,15 +6,19 @@ const RequestApi = '' //接口路径
 //上传文件路径 http://39.97.231.232:8805/attachment/upload/image
 // http://39.97.231.232:8806/file/upload
 // const UploadApi = 'http://39.97.231.232:8806/attachment/upload/image'
-const UploadApi = baseURL + '/attachment/upload/image'
+const UploadApi = baseURL + '/common/upload'
 const UploadRemove = '/attachment/remove'
 
 const Login = '/sso/login'; //登录接口
 
 const QueryByOwenerIdAndOwnerType = '/api/productCategory/listByParentId'; //获取商户支持的支付方式
 
-const CategoryFindAllCate = '/category/findAllCate' //商品类目GET /category/findAllCate
-const CategoryFindAllCateId = '/category/listByParentId?parentId=1' //商品类目
+const CategoryFindAllCate = '/cate/queryCate' //商品类目GET /category/findAllCate
+const CateAddCate = '/cate/addCate' //商品类目添加
+const CateUpdateCate = '/cate/updateCate' //更新类目
+
+
+const CategoryFindAllCateId = '/cate/queryCate' //商品类目
 
 const LogisticsList = '/logistics/logisticsList' //获取物流公司
 
@@ -23,10 +27,10 @@ const CategoryQueryProductIdAttributes = '/category/queryProductIdAttributes' //
 
 
 // 商品管理相关接口
-const ProductAdd = '/product/add' //商品添加
+const ProductAdd = '/product/v1/add' //商品添加
 const ProductList = 'product/search'
-const ProductDetail = '/product/detail' //商品详情
-const ProductUpdate = '/product/update' //更新商品
+const ProductDetail = '/product/v1/detail' //商品详情
+const ProductUpdate = '/product/v1/update' //更新商品
 const ProductspecDelete = '/productspec/delete' //删除
 const ProductBatchDeleteSpec = '/product/batchDeleteSpec' //批量删除商品规格
 const ProductOnSpec = '/product/onSpec' //上架
@@ -83,6 +87,8 @@ export {
   LogisticsList,
   QueryByOwenerIdAndOwnerType,
   CategoryFindAllCate,
+  CateAddCate,
+  CateUpdateCate,
   CategoryFindAllCateId,
   CategoryQueryProductTypeAttributes,
   CategoryQueryProductIdAttributes,

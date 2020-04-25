@@ -2,7 +2,8 @@
 
 const proxyTargetMap = {
     prod: '/api',
-    randy: 'http://39.97.231.232:8806',
+    // randy: 'http://39.97.231.232:8807',
+    randy: 'http://120.27.62.181:8807',
     // randy: 'https://api.sczxpm.com/admin',
     peter: '/peter'
 }
