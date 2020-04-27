@@ -5,11 +5,6 @@ import connect from '../../utils/connect'
 // import { login } from './service'
 import './index.less'
 import lb_bg from '../../asset/login/lb_bg.png'
-import bc_bg from '../../asset/login/bc_bg.png'
-import tr_bg from '../../asset/login/tr_bg.png'
-// import logo from '../../asset/login/logo.png'
-import phone from '../../asset/login/phone.png'
-import password from '../../asset/login/password.png'
 @connect
 class NormalLoginForm extends React.Component {
     handleSubmit = e => {
@@ -47,7 +42,7 @@ class NormalLoginForm extends React.Component {
                     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNTgwMjg0MTI2LCJleHAiOjE1ODAzNzA1MjZ9.-uRlY6nl1QFpH9HUKwyvoZYlc-iMMNvAuJINTv0TtG4'
                 }
             }
-            const action =  authChangeAction(res.data.token)
+            const action = authChangeAction(res.data.token)
             dispatch(action)
         }, 100);
     }
@@ -62,59 +57,71 @@ class NormalLoginForm extends React.Component {
         return (
             <div className="wrapper_login">
 
-                <div className="login_bg_box">
-                    <div className="login_bg_box_lb">
-                        <img src={lb_bg} alt="图片" />
-                    </div>
-                    <div className="login_bg_box_lc"><img src={bc_bg} alt="图片" /></div>
-                    <div className="login_bg_box_rt"><img src={tr_bg} alt="图片" /></div>
-                </div>
-                <Form onSubmit={this.handleSubmit} className="login-form login-form-login">
-                    <div style={{ textAlign: 'center', fontSize: 40, color: '#000' }}>
-                        {/* <img className="login-logo" src={logo} alt="logo" /> */}
-                        国惠商城后台系统
-                    </div>
-                    <div className="login-title">账号登陆</div>
-                    <Form.Item>
-                        {getFieldDecorator('username', {
-                            rules: [{ required: true, message: 'Please input your username!' }],
-                        })(
-                            <Input
-                                style={{ height: 52 }}
-                                prefix={<img className="input-icon" src={phone} alt="icon" />}
-                                placeholder="username"
-                            />
-                        )}
-                    </Form.Item>
-                    <Form.Item>
-                        {getFieldDecorator('password', {
-                            rules: [{ required: true, message: 'Please input your Password!' }],
-                        })(
-                            <Input
-                                style={{ height: 52 }}
-                                prefix={<img className="input-icon" src={password} alt="icon" />}
-                                type="password"
-                                placeholder="password"
-                            />,
-                        )}
-                    </Form.Item>
 
-                    <div className="login-record">
+                <div className="login_left">
 
-                        <div>
-                            <Checkbox onChange={this.onNextChange}>下次自动登录</Checkbox>
+                    <div className="login_box_cont">
+
+                        <div className="login_bg_box">
+                            <img src={lb_bg} alt="图片" />
                         </div>
-                        <div style={{ fontSize: 10, color: '#3983FB', cursor: 'pointer' }}>忘记密码</div>
+
+                        <div className="login_wlo">Welcome</div>
+
+                        <div className="login_left_text">欢迎登录国惠商城后台管理系统</div>
                     </div>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" className="login-form-button">
-                            登录
+
+
+                </div>
+                <div className="login_right">
+                    <div className="login_box_cont">
+
+                        <Form onSubmit={this.handleSubmit} className="login-form login-form-login">
+                            <div style={{ textAlign: 'left', fontSize: 32, color: '#333', marginBottom: 30 }}> 登陆 </div>
+                            {/* <div className="login-title">账号登陆</div> */}
+                            <Form.Item>
+                                {getFieldDecorator('username', {
+                                    rules: [{ required: true, message: 'Please input your username!' }],
+                                })(
+                                    <Input
+                                        style={{ height: 42, paddingLeft: 20 }}
+                                        // prefix={<img className="input-icon" src={phone} alt="icon" />}
+                                        placeholder="username"
+                                    />
+                                )}
+                            </Form.Item>
+                            <Form.Item>
+                                {getFieldDecorator('password', {
+                                    rules: [{ required: true, message: 'Please input your Password!' }],
+                                })(
+                                    <Input
+                                        style={{ height: 42, paddingLeft: 20 }}
+                                        // prefix={<img className="input-icon" src={password} alt="icon" />}
+                                        type="password"
+                                        placeholder="password"
+                                    />,
+                                )}
+                            </Form.Item>
+
+                            <div className="login-record">
+
+                                <div>
+                                    <Checkbox onChange={this.onNextChange}>下次自动登录</Checkbox>
+                                </div>
+                                <div style={{ fontSize: 10, color: '#3983FB', cursor: 'pointer' }}>忘记密码</div>
+                            </div>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" className="login-form-button">
+                                    登录
                         </Button>
-                    </Form.Item>
-                    <Form.Item>
-                        <div className="loginTip">用户为admin的时候，能够看到所有的权限列表</div>
-                    </Form.Item>
-                </Form>
+                            </Form.Item>
+                            <Form.Item>
+                                <div className="loginTip">用户为admin的时候，能够看到所有的权限列表</div>
+                            </Form.Item>
+                        </Form>
+                    </div>
+
+                </div>
             </div>
         );
     }

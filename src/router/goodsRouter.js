@@ -55,7 +55,7 @@ const goodsRouter = [
         component: TypeManage,
         icon: 'bars',
         name: '属性管理',
-        isHide: false,
+        isHide: true,
       },
       {
         path: '/user/goods/counselManage',

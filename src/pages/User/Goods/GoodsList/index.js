@@ -1,13 +1,12 @@
 import React from 'react'
-import { Button, Divider, Modal, message, Form, Input, Select, Cascader } from 'antd'
+import { Button, Divider, Modal, message, Form, Input, Select, Cascader, Tabs } from 'antd'
 import GtableEdit from '../../../../common/GtableEdit'
 import GoodsSetting from '../GoodsSetting'
 import { dismantleSearch, getOptionsList } from '../../../../utils'
 import Gimage from '../../../../common/Gimage'
 import {
     CategoryFindAllCate,
-    ProductOnSpec,
-    ProductOffSpec,
+    ProductCheckState,
     ProductBatchDeleteSpec,
     ProductBatchOffSpec,
     ProductBatchOnSpec,
@@ -16,6 +15,7 @@ import {
 import request from '../../../../utils/request'
 import AddGoods from './AddGoods'
 import './index.less'
+const { TabPane } = Tabs;
 export default class GoodsList extends React.Component {
     constructor() {
         super()
@@ -25,14 +25,7 @@ export default class GoodsList extends React.Component {
             query: {},
             isAddBtnShow: true,
             selectedRows: [],
-            urls: {
-                list: '/product/v1/search',
-                listMethod: 'POST',
-                add: '',
-                edit: '',
-                delete: '/product/delete',
-                deleteMethod: 'POPST'
-            },
+            urls: {},
             isGoodsSetting: true,
             sortedInfo: null,
             stateQuery: {},
@@ -48,37 +41,31 @@ export default class GoodsList extends React.Component {
 
     componentDidMount() {
         let searchObj = dismantleSearch(this)
+        let urls = {
+            list: '/product/v1/search',
+            listMethod: 'POST',
+            add: '',
+            edit: '',
+            delete: '/product/delete',
+            deleteMethod: 'POST'
+        }
+        if (searchObj.shopId) {
+            urls = {
+                list: '/shop/v1/product-list',
+                listMethod: 'POST',
+                add: '',
+                edit: '',
+                delete: '/product/delete',
+                deleteMethod: 'POST'
+            }
+        }
         this.setState({
-            ...searchObj
+            ...searchObj,
+            urls,
         }, () => {
             this.tableChild.sortingParameters();
         })
-        // this.getShopSearch()
     }
-
-
-    getShopSearch = () => {
-        request({
-            url: ShopSearch,
-            method: 'post',
-            data: {
-                pageSize: 10000,
-                pageNumber: 1,
-            }
-        }).then(res => {
-            if (res.code === 100 && res.data) {
-                let list = res.data.datas
-                for (let i = 0; i < list.length; i++) {
-                    list[i].label = list[i].shopName
-                    list[i].value = list[i].shopId
-                }
-                this.setState({
-                    shopList: list
-                })
-            }
-        })
-    }
-
 
     addGoods = () => {
         // this.props.history.push({
@@ -203,19 +190,22 @@ export default class GoodsList extends React.Component {
         let url = ''
         let content = ''
         let thenText = ''
+        let state = 0
         if (type === 'off') {
-            url = ProductOffSpec
+            url = ProductCheckState
             content = '确认要下架该商品吗？'
             thenText = '下架成功'
+            state = 2
         } else {
-            url = ProductOnSpec
+            url = ProductCheckState
             content = '确认上架该商品吗？'
             thenText = '上架成功'
+            state = 1
         }
         let data = {
-            productSpecId: item.productSpecId,
+            state: state,
             productId: item.productId,
-            userId: 0
+            operator: 'admin'
         }
         this.modalToastRequest({
             url,
@@ -233,7 +223,6 @@ export default class GoodsList extends React.Component {
                 request({
                     url: url,
                     method: 'post',
-                    params: { md5Str: localStorage.getItem('authed') },
                     data: data,
                 }).then(res => {
                     if (res.code === 100) {
@@ -243,6 +232,19 @@ export default class GoodsList extends React.Component {
                         message.error(res.message)
                     }
                 })
+            }
+        })
+    }
+
+    handleDelete = (item) => {
+        this.modalToastRequest({
+            url: ProductCheckState,
+            content: '确认要删除该商品吗？',
+            thenText: '删除成功',
+            data: {
+                state: 3,
+                productId: item.productId,
+                operator: 'admin'
             }
         })
     }
@@ -265,6 +267,7 @@ export default class GoodsList extends React.Component {
     }
 
     search = (e) => {
+        console.log(e)
         const that = this
         if (e.productCategoryIds && e.productCategoryIds.length > 0) {
             e.cateId = e.productCategoryIds[0]
@@ -296,13 +299,13 @@ export default class GoodsList extends React.Component {
                 params = {}
                 break;
             case '1':
-                params.status = 1
+                params.state = 1
                 break;
             case '2':
-                params.status = 2
+                params.state = 2
                 break;
             case '3':
-                params.status = 0
+                params.state = 0
                 break;
             default:
                 params = {}
@@ -315,7 +318,7 @@ export default class GoodsList extends React.Component {
     }
 
     render() {
-        let { urls, isGoodsSetting, isAddBtnShow, shopId, stateQuery, isAddGood, editProductId } = this.state;
+        let { urls, isGoodsSetting, isAddBtnShow, shopId, stateQuery, isAddGood, editProductId, titleList } = this.state;
         const _columns = (that) => {
             return [
                 {
@@ -350,11 +353,36 @@ export default class GoodsList extends React.Component {
                         return <span>{categoryOneName}</span>
                     }
                 },
+
+                {
+                    title: '现价',
+                    key: 'productPrice',
+                    dataIndex: 'productPrice',
+                    width: 100,
+                },
+                {
+                    title: '原价',
+                    key: 'originalPrice',
+                    dataIndex: 'originalPrice',
+                    width: 100,
+                },
+                {
+                    title: '会员价',
+                    key: 'memberPrice',
+                    dataIndex: 'memberPrice',
+                    width: 100,
+                },
                 {
                     title: '库存',
-                    key: 'pstock',
+                    key: 'stock',
+                    dataIndex: 'stock',
                     width: 100,
-                    dataIndex: 'pstock',
+                },
+                {
+                    title: '销量',
+                    key: 'saleVolume',
+                    dataIndex: 'saleVolume',
+                    width: 100,
                 },
                 {
                     title: '商品单位',
@@ -404,26 +432,37 @@ export default class GoodsList extends React.Component {
                                 <span style={spanStyle} onClick={() => { this.checkDetiai(item) }}>查看详情</span>
                                 <Divider type="vertical" />
                                 <span style={spanStyle} onClick={() => this.editGoods(item)}>编辑商品</span>
-                                <Divider type="vertical" />
-                                {item.status === 0 && <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'on')}>发布</span>}
-                                {item.status === 2 && <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'on')}>上架</span>}
 
-                                {item.status === 1 && <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'off')}>下架</span>}
+                                {item.status === 0 && <>
+                                    <Divider type="vertical" />
+                                    <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'on')}>发布</span>
+                                </>}
+                                {item.status === 2 && <>
+                                    <Divider type="vertical" />
+                                    <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'on')}>上架</span>
+                                </>}
 
-                                {/* <Divider type="vertical" /> */}
-                                {/* <span style={spanStyle} onClick={(e) => that.handleDelete(e, item)}>删除</span> */}
+                                {item.status === 1 && <>
+                                    <Divider type="vertical" />
+                                    <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'off')}>下架</span>
+                                </>}
+
+
+                                {item.status !== 3 && <>
+                                    <Divider type="vertical" />
+                                    <span style={spanStyle} onClick={(e) => this.handleDelete(item)}>删除</span>
+                                </>}
                             </>
                         )
                     }
                 }
             ]
         }
-        // const operations = <Button icon="delete" onClick={this.goGoodsRecycleBin}>商品回收站</Button>;
-
+        const operations = <Button icon="delete" onClick={this.goGoodsRecycleBin}>商品回收站</Button>;
         return (
             <div>
                 <div style={{ display: !isAddGood ? 'block' : 'none' }} >
-                    {/* {
+                    {
                         titleList && titleList.length > 0 && (
                             <div >
                                 <Tabs defaultActiveKey='0' onChange={this.tabCallback} tabBarExtraContent={operations}>
@@ -434,7 +473,7 @@ export default class GoodsList extends React.Component {
 
                             </div>
                         )
-                    } */}
+                    }
                     <div style={{ paddingBottom: 10 }}>
                         <SearchGoodsForm handleSearch={this.search} />
                     </div>
@@ -476,12 +515,39 @@ class SearchGoods extends React.Component {
     constructor() {
         super()
         this.state = {
-            categoryList: []
+            categoryList: [],
+            shopList: []
         }
     }
     componentDidMount() {
+        this.getShopSearch()
         this.getCategoryFindAllCate()
     }
+
+    getShopSearch = () => {
+        request({
+            url: ShopSearch,
+            method: 'post',
+            data: {
+                pageSize: 10000,
+                pageNumber: 1,
+            }
+        }).then(res => {
+            if (res.code === 100 && res.data) {
+                let list = res.data.dataList
+                for (let i = 0; i < list.length; i++) {
+                    list[i].id = list[i].shopId
+                    list[i].label = list[i].name
+                    list[i].value = list[i].shopId
+                }
+                this.setState({
+                    shopList: list
+                })
+            }
+        })
+    }
+
+
 
     getCategoryFindAllCate = (parentId, callback) => {
         let obj = {}
@@ -543,12 +609,12 @@ class SearchGoods extends React.Component {
     }
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { categoryList } = this.state
+        const { categoryList, shopList } = this.state
         return <div>
             <Form layout='inline'>
 
                 <Form.Item label="商品名称" >
-                    {getFieldDecorator('productName', { valuePropName: 'value' })(<Input style={{ width: 170 }} placeholder='请输入名称' />)}
+                    {getFieldDecorator('keyword', { valuePropName: 'value' })(<Input style={{ width: 170 }} placeholder='请输入名称' />)}
                 </Form.Item>
 
                 <Form.Item label="商品类目">
@@ -560,11 +626,7 @@ class SearchGoods extends React.Component {
                 <Form.Item label="所属店铺" >
                     {getFieldDecorator('shopId', { valuePropName: 'value' })(
                         <Select style={{ width: 170 }} placeholder='请选择所属店铺'>
-                            {getOptionsList([{
-                                id: 1,
-                                value: 1,
-                                label: '商铺'
-                            }])}
+                            {getOptionsList(shopList)}
                         </Select>
                     )}
                 </Form.Item>

@@ -21,21 +21,21 @@ const shopsRouter = [
     pathName: 'shops',
     name: '商户管理',
     icon: 'shop',
-    redirect: '/user/shops/InTheAudit',
+    redirect: '/user/shops/manage',
     children: [
-      {
-        path: '/user/shops/InTheAudit',
-        pathName: 'in-the-audit',
-        component: InTheAudit,
-        name: '入驻审核',
-        icon: 'safety-certificate',
-      },
       {
         path: '/user/shops/manage',
         pathName: 'shops-manage',
         component: ShopManage,
         name: '店铺管理',
         icon: 'shop',
+      },
+      {
+        path: '/user/shops/InTheAudit',
+        pathName: 'in-the-audit',
+        component: InTheAudit,
+        name: '入驻审核',
+        icon: 'safety-certificate',
       },
       {
         path: '/user/shops/detail',

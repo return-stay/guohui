@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tabs, Radio, Divider, Modal, message, Form, Select, Input } from 'antd'
+import { Tabs, Divider, Modal, message, Form, Select, Input } from 'antd'
 
 import GtableEdit from '../../../../common/GtableEdit'
 import request from '../../../../utils/request'
@@ -299,10 +299,10 @@ export default class OrderManage extends React.Component {
     return (
       <div className="om-box">
 
-        <Radio.Group defaultValue={orderType} buttonStyle="solid" style={{ width: '100%' }} onChange={this.orderRadioChange}>
+        {/* <Radio.Group defaultValue={orderType} buttonStyle="solid" style={{ width: '100%' }} onChange={this.orderRadioChange}>
           <Radio.Button style={{ width: '50%', textAlign: 'center' }} value={0}>商品订单</Radio.Button>
           <Radio.Button style={{ width: '50%', textAlign: 'center' }} value={1}>拍品订单</Radio.Button>
-        </Radio.Group>
+        </Radio.Group> */}
 
         <div>
           <Tabs defaultActiveKey={orderStatus} onChange={this.orderTabChange}>

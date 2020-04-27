@@ -1,7 +1,7 @@
 import React from 'react'
 import { Row, Col, Button, message, Modal } from 'antd'
 import Gimage from '../../../../common/Gimage'
-import { MerchantDetail, MerchantAuditPass, ShopUpdate } from '../../../../config/api'
+import { ShopDetial, ShopStatus, ShopUpdate } from '../../../../config/api'
 import { dismantleSearch } from '../../../../utils'
 import { withRouter } from 'react-router-dom'
 import request from '../../../../utils/request'
@@ -15,7 +15,7 @@ class ShopDetail extends React.Component {
 
     this.state = {
       info: {},
-      shops: []
+      merchantDTO: {},
     }
   }
 
@@ -31,14 +31,16 @@ class ShopDetail extends React.Component {
   init = () => {
     let id = this.state.id
     request({
-      url: MerchantDetail + '/' + id,
-      params: { md5Str: localStorage.getItem('authed') },
+      url: ShopDetial,
+      params: {
+        id: id,
+      },
     }).then(res => {
       console.log(res)
-      console.log(this)
+      let resdata = res.data
       this.setState({
-        info: res.data,
-        shops: res.data.shops
+        info: resdata,
+        merchantDTO: resdata.merchantDTO || {},
       })
     })
   }
@@ -50,66 +52,25 @@ class ShopDetail extends React.Component {
   // 创建店铺
   createShop = () => {
     console.log('创建店铺')
-    const info = this.state.info
-    const shops = info.shops
-    for (let i = 0; i < shops.length; i++) {
-      if (shops[i].state === 0) {
-        this.createShopRequest(shops[i])
-      }
-    }
-    // this.props.history.push({
-    //   pathname: '/user/shops/detail',
-    //   search: searchJoint({
-    //     type: '',
-    //     id: info.id
-    //   })
-    // })
+    this.createShopRequest()
   }
   // 创建店铺请求
-  createShopRequest = (shopItem) => {
+  createShopRequest = () => {
     const that = this
     const info = this.state.info
+    const merchant = this.state.merchantDTO
+    delete info.merchantDTO
     let params = {
-      shopType: info.type,
-      idCard: info.legalIdcardCode,
-      mobile: info.mobile,
-      bankCard: info.cardNo,
-      bankName: info.openBank,
-      idCardFrontPic: info.idCardFaceUrl,
-      idCardFrontPicId: info.legalIdcardFaceId,
-      idCardBackPic: info.idCardBackUrl,
-      idCardBackPicId: info.legalIdcardBackId,
-      userId: info.userId,
-      state: 3,
+      shop: info,
+      merchant: merchant,
     }
-
-    if (info.type === 1) {
-      params.userName = info.name
-    } else {
-      params.companyName = info.name
-      params.userName = info.legalName
-      params.businessLicenseFront = info.businessLicenseFaceUrl
-      params.businessLicenseFrontId = info.businessLicenseFaceId
-    }
-
-    params.shopName = shopItem.shopName
-    params.tradeIds = shopItem.tradeIds
-    params.shopOwnerAccount = shopItem.shopownerAccount || '1'
-    params.stars = shopItem.stars
-    params.authLevel = shopItem.authLevel
-    params.shopLogo = shopItem.logoPicUrl
-    params.shopCover = shopItem.coverPicUrl
-    params.shopDesc = shopItem.shopDesc
-    params.recommend = shopItem.recommend
     console.log(params)
     request({
       url: ShopUpdate,
       method: 'post',
-      params: { md5Str: localStorage.getItem('authed') },
       data: params
     }).then(res => {
       if (res.code === 100) {
-        message.success('创建完成')
         that.init()
       } else {
         message.success(res.message)
@@ -129,43 +90,43 @@ class ShopDetail extends React.Component {
   // 通过审核
   getApproved = () => {
     const id = this.state.id
-    const that = this
     confirm({
       title: '提示',
       content: '确认通过审核吗？',
       onOk() {
         request({
-          url: MerchantAuditPass,
+          url: ShopStatus,
           method: 'post',
-          params: { md5Str: localStorage.getItem('authed') },
           data: {
-            merchantId: id
+            shopId: Number(id),
+            state: 2,
+            operator: 'admin',
           }
         }).then(res => {
           message.success('通过审核')
-          that.init()
+          // that.init()
+          // that.createShop()
         })
       },
     });
   }
   render() {
 
-    const { info, shops } = this.state
-    console.log(shops)
+    const { info, merchantDTO } = this.state
     return (
       <div className="shop-detail">
         <h1 className="item-title" style={{ borderTop: 'none' }}>基础信息</h1>
         {
-          info.type === 1 ? <>
+          info.attribute === 0 ? <>
             <Row>
               <Col span={6}>
-                <span className="col-title">申请人：</span><span>{info.name}</span>
+                <span className="col-title">申请人：</span><span>{merchantDTO.name}</span>
               </Col>
               <Col span={6}>
-                <span className="col-title">联系方式：</span><span>{info.mobile}</span>
+                <span className="col-title">联系方式：</span><span>{merchantDTO.mobile}</span>
               </Col>
               <Col span={6}>
-                <span className="col-title" style={{ width: 100 }}>身份证号码：</span><span>{info.cardNo}</span>
+                <span className="col-title" style={{ width: 100 }}>身份证号码：</span><span>{merchantDTO.idCard}</span>
               </Col>
             </Row>
 
@@ -180,10 +141,10 @@ class ShopDetail extends React.Component {
           </> : <>
               <Row>
                 <Col span={6}>
-                  <span className="col-title">法人姓名：</span><span>{info.legalName}</span>
+                  <span className="col-title">法人姓名：</span><span>{merchantDTO.legalName}</span>
                 </Col>
                 <Col span={6}>
-                  <span className="col-title">联系方式：</span><span>{info.mobile}</span>
+                  <span className="col-title">联系方式：</span><span>{merchantDTO.mobile}</span>
                 </Col>
                 <Col span={6}>
                   <span className="col-title">申请类型：</span><span>企业</span>
@@ -192,7 +153,7 @@ class ShopDetail extends React.Component {
 
               <Row>
                 <Col span={6}>
-                  <span className="col-title">身份证号：</span><span>{info.legalIdcardCode}</span>
+                  <span className="col-title">身份证号：</span><span>{merchantDTO.idCard}</span>
                 </Col>
               </Row>
             </>
@@ -202,10 +163,10 @@ class ShopDetail extends React.Component {
 
         <Row>
           <Col span={10}>
-            <span className="col-title">开户行：</span><span>{info.openBank}</span>
+            <span className="col-title">开户行：</span><span>{merchantDTO.bankOpen}</span>
           </Col>
           <Col span={10}>
-            <span className="col-title">银行卡号：</span><span>{info.cardNo}</span>
+            <span className="col-title">银行卡号：</span><span>{merchantDTO.bankNum}</span>
           </Col>
         </Row>
 
@@ -215,18 +176,18 @@ class ShopDetail extends React.Component {
           <Col span={24}>
             <div style={{ display: 'flex', alignItems: 'flex-start' }}>
               <span className="col-title" style={{ width: 100 }}>身份证图片：</span>
-              <Gimage style={{ height: 200, marginRight: 20 }} src={info.idCardFaceUrl} alt="图片" />
-              <Gimage style={{ height: 200 }} src={info.idCardBackUrl} alt="图片" />
+              <Gimage style={{ height: 200, marginRight: 20 }} src={merchantDTO.back} alt="图片" />
+              <Gimage style={{ height: 200 }} src={merchantDTO.front} alt="图片" />
             </div>
           </Col>
         </Row>
 
         {
-          info.type === 0 && <Row>
+          merchantDTO.attribute === 1 && <Row>
             <Col span={24}>
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                 <span className="col-title" style={{ width: 100 }}>营业执照</span>
-                <Gimage style={{ height: 200, marginRight: '10px' }} src={info.businessLicenseFaceUrl} />
+                <Gimage style={{ height: 200, marginRight: '10px' }} src={info.license} />
               </div>
             </Col>
           </Row>
@@ -234,57 +195,55 @@ class ShopDetail extends React.Component {
 
         <h2 className="item-title">店铺信息</h2>
 
-        {
-          shops.map(item => {
-            return <div style={{ marginBottom: 20, border: '1px solid #ccc', padding: 16 }} key={item.shopId}>
-              <Row>
-                <Col span={24}>
-                  <span className="col-title">店铺名称：</span><span>{item.shopName}</span>
-                </Col>
-              </Row>
+        <div style={{ marginBottom: 20, border: '1px solid #ccc', padding: 16 }}>
+          <Row>
+            <Col span={24}>
+              <span className="col-title">店铺名称：</span><span>{info.name}</span>
+            </Col>
+          </Row>
 
-              <Row>
-                <Col span={24}>
-                  <span className="col-title">主营业务：</span><span>{item.trade}</span>
-                </Col>
-              </Row>
+          <Row>
+            <Col span={24}>
+              <span className="col-title">主营业务：</span><span>{info.mainBiz}</span>
+            </Col>
+          </Row>
 
-              <Row>
-                <Col span={24}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                    <span className="col-title" style={{ width: 100 }}>店铺logo：</span>
-                    <Gimage style={{ height: 120, marginRight: '10px' }} src={item.logoPicUrl} />
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                    <span className="col-title" style={{ width: 100 }}>店铺封面图：</span>
-                    <Gimage style={{ height: 120, marginRight: '10px' }} src={item.coverPicUrl} />
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <span className="col-title">店铺介绍：</span><span>{item.shopDesc}</span>
-                </Col>
-              </Row>
-            </div>
-          })
-        }
+          <Row>
+            <Col span={24}>
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <span className="col-title" style={{ width: 100 }}>店铺logo：</span>
+                <Gimage style={{ height: 120, marginRight: '10px' }} src={info.logo} />
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <span className="col-title" style={{ width: 100 }}>店铺封面图：</span>
+                <Gimage style={{ height: 120, marginRight: '10px' }} src={info.cover} />
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <span className="col-title">店铺介绍：</span><span>{info.shopDesc}</span>
+            </Col>
+          </Row>
+        </div>
         <Row>
           <Col span={24} style={{ marginTop: 40 }}>
             <span className="col-title"></span>
             <span>
-              {info.state === 0 && <>
-                <Button onClick={this.failTheAudit}>不通过审核</Button>
-                <Button type="primary" style={{ marginLeft: 20 }} onClick={this.getApproved}>通过审核</Button>
-              </>}
-
               {
-                info.state === 3 && <Button type="primary" style={{ marginLeft: 20 }} onClick={this.createShop}>创建店铺</Button>
+                info.state === 0 && <>
+                  <Button onClick={this.failTheAudit}>不通过审核</Button>
+                  <Button type="primary" style={{ marginLeft: 20 }} onClick={this.getApproved}>通过审核</Button>
+                </>
               }
+
+              {/* {
+                info.state === 3 && <Button type="primary" style={{ marginLeft: 20 }} onClick={this.createShop}>创建店铺</Button>
+              } */}
             </span>
           </Col>
         </Row>

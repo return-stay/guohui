@@ -26,14 +26,14 @@ class AddShop extends React.Component {
     super(props);
     this.state = {
       current: 0,
-      idCardFrontPic: '', //身份证正面
-      idCardBackPic: '', //身份证反面
-      businessLicenseFront: '', //营业执照
-      shopLogo: '', //店铺logo
-      shopCover: '', //店铺封面
+      front: '', //身份证正面
+      back: '', //身份证反面
+      license: '', //营业执照
+      logo: '', //店铺logo
+      cover: '', //店铺封面
       tradeList: [], //所属行业列表
       tradeIds: '', //行业ID
-      shopTypeShow: 1, // 店铺类型,
+      attributeShow: 1, // 店铺类型,
       confirmLoading: false,
     };
   }
@@ -45,8 +45,8 @@ class AddShop extends React.Component {
     })
     this.props.triggerRef && this.props.triggerRef(this)
 
-    if (searchObj.id) {
-      this.edit(searchObj.id)
+    if (searchObj.shopId) {
+      this.edit(searchObj.shopId)
       this.setState({
         isEdit: true
       })
@@ -59,11 +59,13 @@ class AddShop extends React.Component {
     this.getTradeList()
   }
 
-  getTradeList = () => {
+  getTradeList = (pId = 0) => {
     request({
       url: CategoryFindAllCateId,
+      params: {
+        parentId: pId
+      }
     }).then(res => {
-      console.log(res)
       let tradeList = res.data
       for (let i = 0; i < tradeList.length; i++) {
         tradeList[i].value = tradeList[i].name
@@ -75,42 +77,41 @@ class AddShop extends React.Component {
     })
   }
 
-  edit = (id) => {
+  edit = (shopId) => {
     request({
       url: ShopDetial,
       params: {
-        shopId: id,
-        md5Str: localStorage.getItem('authed'),
+        id: shopId,
+        // md5Str: localStorage.getItem('authed'),
       }
     }).then(res => {
       let resdata = res.data
+
+      let merchantDTO = resdata.merchantDTO || {}
       let setData = {
-        shopType: resdata.shopType,
-        userName: resdata.userName,
-        idCard: resdata.idCard,
-        mobile: resdata.mobile,
-        bankCard: resdata.bankCard,
-        bankName: resdata.bankName,
-        shopName: resdata.shopName,
-        trade: resdata.trade.split(','),
-        shopOwnerAccount: resdata.shopOwnerAccount,
+        attribute: merchantDTO.attribute,
+        legalName: merchantDTO.legalName,
+        idCard: merchantDTO.idCard,
+        mobile: merchantDTO.mobile,
+        bankNum: merchantDTO.bankNum,
+        bankOpen: merchantDTO.bankOpen,
+        companyName: merchantDTO.name,
+        shopName: resdata.name,
+        mainBiz: resdata.mainBiz.split(','),
         stars: resdata.stars,
-        authLevel: resdata.authLevel,
+        type: resdata.type,
         shopDesc: resdata.shopDesc,
-      }
-      if (resdata.companyName) {
-        setData.companyName = resdata.companyName
+        tag: resdata.tag,
       }
       this.setState({
-        idCardFrontPic: resdata.idCardFrontPic,
-        idCardFrontPicId: resdata.idCardFrontPicId,
-        idCardBackPic: resdata.idCardBackPic,
-        idCardBackPicId: resdata.idCardBackPicId,
-        shopLogo: resdata.shopLogo,
-        businessLicenseFront: resdata.businessLicenseFront,
-        businessLicenseFrontId: resdata.businessLicenseFrontId,
-        shopCover: resdata.shopCover,
-        shopTypeShow: resdata.shopType,
+        merchantId: merchantDTO.id,
+        front: merchantDTO.front,
+        back: merchantDTO.back,
+        license: merchantDTO.license,
+        attributeShow: merchantDTO.attribute,
+        shopId: resdata.shopId,
+        logo: resdata.logo,
+        cover: resdata.cover,
         tradeIds: resdata.tradeIds,
       }, () => {
         this.props.form.setFieldsValue({ ...setData })
@@ -136,43 +137,65 @@ class AddShop extends React.Component {
         this.setState({
           confirmLoading: true,
         })
-        values.trade = values.trade.join(',')
+        values.mainBiz = values.mainBiz.join(',')
 
-        const { id, idCardFrontPic, idCardBackPic, shopLogo, shopCover, businessLicenseFront, businessLicenseBack, tradeIds
-          , idCardFrontPicId, idCardBackPicId, businessLicenseFrontId } = this.state
+        const { merchantId, shopId, front, back, logo, cover, license } = this.state
 
-        let params = {
-          ...values,
-          idCardFrontPic: idCardFrontPic,
-          idCardBackPic: idCardBackPic,
-          businessLicenseFront: businessLicenseFront,
-          idCardFrontPicId,
-          idCardBackPicId,
-          businessLicenseFrontId,
-          businessLicenseBack: businessLicenseBack,
-          shopLogo: shopLogo,
-          shopCover: shopCover,
-          tradeIds: tradeIds,
+        let params = {}
+
+        params.merchant = {
+          attribute: values.attribute,
+          back: back,
+          bankNum: values.bankNum,
+          bankOpen: values.bankOpen,
+          front: front,
+          idCard: values.idCard,
+          legalName: values.legalName,
+          reason: values.reason,
+          state: values.state,
+          mobile: values.mobile
         }
-        // if (values.shopType === 1) {
-        //   params.businessLicenseFront = businessLicenseFront
-        //   params.businessLicenseFrontId = businessLicenseFrontId
+
+        if (values.attribute) {
+          params.merchant.license = license
+          params.merchant.name = values.companyName
+        } else {
+          params.merchant.license = ''
+          params.merchant.name = ''
+        }
+
+        params.shop = {
+          attribute: 1,
+          name: values.shopName,
+          cover: cover,
+          followerNum: values.followerNum,
+          logo: logo,
+          mainBiz: values.mainBiz,
+          // mainBiz: tradeIds,
+          reason: values.reason,
+          recommend: values.recommend,
+          shopDesc: values.shopDesc,
+          stars: values.stars,
+          tag: values.tag,
+          type: values.type,
+        }
+        // if (values.attribute === 1) {
+        //   params.license = license
         // }
         let url = ShopAdd
-        if (id) {
+        if (shopId) {
           url = ShopUpdate
-          params.shopId = this.state.id
+          params.merchant.id = merchantId
+          params.shop.shopId = shopId
         }
-
-        params.userId = '0'
         request({
           url: url,
           method: 'post',
-          params: { md5Str: localStorage.getItem('authed') },
+          // params: { md5Str: localStorage.getItem('authed') },
           data: params
         }).then(res => {
           if (res.code === 100) {
-            let messageText = id ? '保存成功' : '添加成功'
+            let messageText = shopId ? '保存成功' : '添加成功'
             message.success(messageText)
             setTimeout(() => {
               this.props.history.goBack()
@@ -200,23 +223,20 @@ class AddShop extends React.Component {
     console.log(imgid)
     let obj = {}
     switch (type) {
-      case 'idCardFrontPic':
-        obj.idCardFrontPic = img
-        obj.idCardFrontPicId = imgid
+      case 'front':
+        obj.front = img
         break;
-      case 'idCardBackPic':
-        obj.idCardBackPic = img
-        obj.idCardBackPicId = imgid
+      case 'back':
+        obj.back = img
         break;
-      case 'shopLogo':
-        obj.shopLogo = img
+      case 'logo':
+        obj.logo = img
         break;
-      case 'shopCover':
-        obj.shopCover = img
+      case 'cover':
+        obj.cover = img
         break;
-      case 'businessLicenseFront':
-        obj.businessLicenseFront = img
-        obj.businessLicenseFrontId = imgid
+      case 'license':
+        obj.license = img
         break;
       default:
         obj = {}
@@ -231,28 +251,29 @@ class AddShop extends React.Component {
     console.log(e.target.value)
     let value = e.target.value
     this.setState({
-      shopTypeShow: value
+      attributeShow: value
     })
   }
   tradeChange = (e) => {
     console.log(e)
-    let tradeList = this.state.tradeList
-    let ids = []
-    for (let i = 0; i < tradeList.length; i++) {
-      for (let j = 0; j < e.length; j++) {
-        if (e[j] === tradeList[i].value) {
-          ids.push(tradeList[i].id)
-        }
-      }
-    }
-    this.setState({
-      tradeIds: ids.join(',')
-    })
+    // let tradeList = this.state.tradeList
+    // let ids = []
+    // for (let i = 0; i < tradeList.length; i++) {
+    //   for (let j = 0; j < e.length; j++) {
+    //     if (e[j] === tradeList[i].value) {
+    //       ids.push(tradeList[i].id)
+    //     }
+    //   }
+    // }
+    // this.setState({
+    //   tradeIds: ids.join(',')
+    // })
   }
 
   render() {
     const inputStyle = { width: 500 }
-    const { current, idCardFrontPic, idCardBackPic, shopLogo, shopCover, shopTypeShow, tradeList, businessLicenseFront, confirmLoading, id } = this.state;
+    const { current, front, back, logo, cover, attributeShow, tradeList, license, confirmLoading } = this.state;
+    console.log(logo)
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: { span: 10 },
@@ -288,7 +309,7 @@ class AddShop extends React.Component {
 
           <div className={steps[current].type === 1 ? '' : 'display-none'}>
             <Form.Item label="商户类型">
-              {getFieldDecorator('shopType', { valuePropName: 'value', initialValue: 1, rules: [{ required: true, message: '请选择店铺类型' }] })(
+              {getFieldDecorator('attribute', { valuePropName: 'value', initialValue: 1, rules: [{ required: true, message: '请选择店铺类型' }] })(
                 <Radio.Group onChange={this.shopTypeChange}>
                   <Radio value={0}>个人</Radio>
                   <Radio value={1}>企业</Radio>
@@ -297,12 +318,12 @@ class AddShop extends React.Component {
             </Form.Item>
 
             {
-              shopTypeShow === 1 && <>
+              attributeShow === 1 && <>
                 <Form.Item label="企业名称">
                   {getFieldDecorator('companyName', { valuePropName: 'value', rules: [{ required: true, message: '请输入企业名称' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
                 <Form.Item label="法人名称">
-                  {getFieldDecorator('userName', { valuePropName: 'value', rules: [{ required: true, message: '请输入姓名' }] })(<Input style={inputStyle} />)}
+                  {getFieldDecorator('legalName', { valuePropName: 'value', rules: [{ required: true, message: '请输入姓名' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
 
                 <Form.Item label="法人身份证号码">
@@ -312,9 +333,9 @@ class AddShop extends React.Component {
             }
 
             {
-              shopTypeShow === 0 && <>
+              attributeShow === 0 && <>
                 <Form.Item label="姓名">
-                  {getFieldDecorator('userName', { valuePropName: 'value', rules: [{ required: true, message: '请输入姓名' }] })(<Input style={inputStyle} />)}
+                  {getFieldDecorator('legalName', { valuePropName: 'value', rules: [{ required: true, message: '请输入姓名' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
 
                 <Form.Item label="身份证号码">
@@ -325,15 +346,15 @@ class AddShop extends React.Component {
 
             <Form.Item label="手机号">
               {getFieldDecorator('mobile', { valuePropName: 'value', rules: [{ required: true, message: '请输入手机号' }] })(
-                <Input style={{ width: 250, marginRight: 20 }} disabled={id} />
+                <Input style={{ width: 250, marginRight: 20 }} />
               )}
-              <span style={{ fontSize: 12, color: '#f5222d' }}>请慎重填写手机号，不可修改</span>
+              {/* <span style={{ fontSize: 12, color: '#f5222d' }}>请慎重填写手机号，不可修改</span> */}
             </Form.Item>
             <Form.Item label="银行卡号">
-              {getFieldDecorator('bankCard', { valuePropName: 'value', rules: [{ required: true, message: '请输入银行卡' }] })(<Input style={inputStyle} />)}
+              {getFieldDecorator('bankNum', { valuePropName: 'value', rules: [{ required: true, message: '请输入银行卡' }] })(<Input style={inputStyle} />)}
             </Form.Item>
             <Form.Item label="开户行">
-              {getFieldDecorator('bankName', { valuePropName: 'value', rules: [{ required: true, message: '请输入开户行' }] })(<Input style={inputStyle} />)}
+              {getFieldDecorator('bankOpen', { valuePropName: 'value', rules: [{ required: true, message: '请输入开户行' }] })(<Input style={inputStyle} />)}
             </Form.Item>
 
             <Row>
@@ -342,18 +363,18 @@ class AddShop extends React.Component {
               </Col>
               <Col span={19}>
                 <div style={{ display: 'inline-block', width: 240, height: 120, marginRight: 20 }}>
-                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证正面" file={idCardFrontPic} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'idCardFrontPic', imgid) }} />
+                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证正面" file={front} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'front', imgid) }} />
                 </div>
                 <div style={{ display: 'inline-block', width: 240, height: 120 }}>
-                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证反面" file={idCardBackPic} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'idCardBackPic', imgid) }} />
+                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证反面" file={back} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'back', imgid) }} />
                 </div>
               </Col>
             </Row>
 
             {
-              shopTypeShow === 1 && <>
+              attributeShow === 1 && <>
                 <Form.Item label="营业执照">
-                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传营业执照" file={businessLicenseFront} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'businessLicenseFront', imgid) }} />
+                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传营业执照" file={license} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'license', imgid) }} />
                 </Form.Item>
               </>
             }
@@ -365,22 +386,21 @@ class AddShop extends React.Component {
               {getFieldDecorator('shopName', { valuePropName: 'value', rules: [{ required: true, message: '请输入店铺名称' }] })(<Input style={inputStyle} />)}
             </Form.Item>
             <Form.Item label="主营业务">
-              {getFieldDecorator('trade', { valuePropName: 'value', rules: [{ required: true, message: '请选择主营业务' }] })(
+              {getFieldDecorator('mainBiz', { valuePropName: 'value', rules: [{ required: true, message: '请选择主营业务' }] })(
                 <Select mode="multiple" placeholder='请选择主营业务' style={inputStyle} onChange={this.tradeChange}>
                   {getOptionsList(tradeList)}
                 </Select>
               )}
             </Form.Item>
-
-            <Form.Item label="店长账号">
-              {getFieldDecorator('shopOwnerAccount', { valuePropName: 'value' })(<Input style={inputStyle} />)}
+            <Form.Item label="店铺标签">
+              {getFieldDecorator('tag', { valuePropName: 'value' })(<Input style={inputStyle} />)}
             </Form.Item>
 
             <Form.Item label="店铺星级">
               {getFieldDecorator('stars', { valuePropName: 'value' })(<Rate />)}
             </Form.Item>
             <Form.Item label="店铺等级">
-              {getFieldDecorator('authLevel', { valuePropName: 'value' })(
+              {getFieldDecorator('type', { valuePropName: 'value' })(
                 <Radio.Group>
                   <Radio value={0}>普通店铺</Radio>
                   <Radio value={1}>优选店铺</Radio>
@@ -392,13 +412,13 @@ class AddShop extends React.Component {
             <div style={{ width: '100%', display: 'flex' }}>
               <div style={{ flex: 1 }}>
                 <Form.Item label="店铺logo" {...formItemLayout}>
-                  <Gupload uploadButtonText="上传logo（200*200）" file={shopLogo} success={(img) => { this.imgUploadSuccessCallback(img, 'shopLogo') }} />
+                  <Gupload uploadButtonText="上传logo（200*200）" file={logo} success={(img) => { this.imgUploadSuccessCallback(img, 'logo') }} />
                 </Form.Item>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ marginLeft: '-30%' }}>
                   <Form.Item label="店铺封面" {...formItemLayoutTwo}>
-                    <Gupload uploadButtonText="上传封面（686*280）" file={shopCover} success={(img) => { this.imgUploadSuccessCallback(img, 'shopCover') }} />
+                    <Gupload uploadButtonText="上传封面（686*280）" file={cover} success={(img) => { this.imgUploadSuccessCallback(img, 'cover') }} />
                   </Form.Item>
                 </div>
               </div>

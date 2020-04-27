@@ -45,7 +45,7 @@ export default class EditorFunction extends React.Component {
       // files 是 input 中选中的文件列表
       if (files[0]) {
         const formData = new window.FormData()
-        formData.append('files', files[0], 'cover.jpg')
+        formData.append('file', files[0], 'cover.jpg')
         fetch(uploadImgServerUrl, {
           method: 'POST',
           body: formData
@@ -53,9 +53,9 @@ export default class EditorFunction extends React.Component {
           return res.json()
         }).then((res) => {
           if (res.code === 100) {
-            const data = res.data[0]
+            const data = res.data
             // 上传代码返回结果之后，将图片插入到编辑器中
-            insert(data.path)
+            insert(data.imageUrl)
           } else {
             console.log(res.message)
           }

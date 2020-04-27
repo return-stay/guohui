@@ -1,5 +1,5 @@
 import React from 'react'
-import { ProductDetail, ProductUpdate, ProductAdd, CategoryFindAllCate } from '../../../../config/api'
+import { ProductDetail, ProductUpdate, ProductAdd, CategoryFindAllCate,ShopSearch } from '../../../../config/api'
 import { Button, Form, Input, InputNumber, Icon, message, Row, Col, Radio, Select, Cascader, Card, DatePicker, PageHeader } from 'antd'
 import { getOptionsList } from '../../../../utils'
 import request from '../../../../utils/request'
@@ -11,7 +11,6 @@ import Guploads from '../../../../common/Gupload/Guploads'
 import Geditor from '../../../../common/Geditor'
 import GeditorOther from '../../../../common/Geditor/GeditorOther'
 import moment from 'moment'
-const InputGroup = Input.Group;
 class AddGoods extends React.Component {
   constructor() {
     super()
@@ -75,35 +74,26 @@ class AddGoods extends React.Component {
   }
 
   getShowList = () => {
-    // request({
-    //   url: '/shop/v1/product-list',
-    //   method: 'post',
-    //   params: { md5Str: localStorage.getItem('authed') },
-    //   data: {
-    //     pageNumber: 1,
-    //     pageSize: 1000,
-    //   }
-    // }).then(res => {
-    //   if (res.code === 100) {
-    //     let showList = res.data.dataList
-    //     for (let i = 0; i < showList.length; i++) {
-    //       showList[i].id = showList[i].shopId
-    //       showList[i].value = showList[i].shopId
-    //       showList[i].label = showList[i].shopName
-    //     }
-    //     this.setState({
-    //       showList,
-    //     })
-    //   }
-    // })
-    this.setState({
-      showList: [
-        {
-          id: 1,
-          value: 1,
-          label: '商铺'
+    request({
+      url: ShopSearch,
+      method: 'post',
+      params: { md5Str: localStorage.getItem('authed') },
+      data: {
+        pageNumber: 1,
+        pageSize: 1000,
+      }
+    }).then(res => {
+      if (res.code === 100) {
+        let showList = res.data.dataList
+        for (let i = 0; i < showList.length; i++) {
+          showList[i].id = showList[i].shopId
+          showList[i].value = showList[i].shopId
+          showList[i].label = showList[i].name
         }
-      ]
+        this.setState({
+          showList,
+        })
+      }
     })
   }
 
@@ -140,9 +130,9 @@ class AddGoods extends React.Component {
 
   getOption = (productCategoryId) => {
     this.getCategoryFindAllCate(null, (parens)=> {
-      const targetOption = this.getIdOptions(2);
+      const targetOption = this.getIdOptions(productCategoryId[0]);
       targetOption.loading = true;
-      this.getCategoryFindAllCate(2, (list) => {
+      this.getCategoryFindAllCate(productCategoryId[0], (list) => {
         targetOption.loading = false;
         targetOption.children = list
         this.setState({
@@ -158,22 +148,21 @@ class AddGoods extends React.Component {
       url: ProductDetail,
       params: {
         id: id,
-        token: localStorage.getItem('authed'),
+        // token: localStorage.getItem('authed'),
       }
     }).then(res => {
       let resdata = res.data
-
+      let shopData = res.data.shopDTO || {}
       let setData = {
-        // productCategoryId: [resdata.categoryOneId, resdata.categoryTwoId],
-        productCategoryId: [2, 20],
+        productCategoryId: [resdata.categoryOneId, resdata.categoryTwoId],
         productName: resdata.productName,
-        shopId: 1,
+        shopId: shopData.shopId,
         saleType: resdata.saleType,
         freeShipping: resdata.freeShipping,
         recommendation: resdata.recommendation,
       }
 
-      this.getOption([2, 20])
+      this.getOption([resdata.categoryOneId, resdata.categoryTwoId])
 
       if (resdata.saleType === 1) {
         setData.saleStartTimeMoment = moment(resdata.saleStartTime, 'YYYY-MM-DD hh:mm:ss')
@@ -200,7 +189,7 @@ class AddGoods extends React.Component {
         }
 
       }
-      let marketPriceArr = resdata.marketPrice ? resdata.marketPrice.split('-') : []
+      // let marketPriceArr = resdata.marketPrice ? resdata.marketPrice.split('-') : []
 
       this.setState({
         skuList: resdata.skuList,
@@ -213,8 +202,8 @@ class AddGoods extends React.Component {
         categoryTwoId: resdata.categoryTwoId,
         majorLabels: this.arrReturnNewarr(resdata.majorLabels || []),
         minorLabels: this.arrReturnNewarr(resdata.minorLabels || []),
-        marketPriceMin: marketPriceArr[0] || null,
-        marketPriceMax: marketPriceArr[1] || null,
+        // marketPriceMin: marketPriceArr[0] || null,
+        // marketPriceMax: marketPriceArr[1] || null,
         saleTypeValue: resdata.saleType,
         videoPic,
       }, () => {
@@ -295,7 +284,7 @@ class AddGoods extends React.Component {
 
   stitchingParameters = (values) => {
     const { productPicUrl, productPicUrlList, majorLabels, minorLabels, txtHtml, saleTypeValue, skuList,
-      saleStartTime, saleEndTime, categoryOneId, categoryTwoId, videoPic, marketPriceMin, marketPriceMax } = this.state
+      saleStartTime, saleEndTime, categoryOneId, categoryTwoId, videoPic } = this.state
     values.shopId = Number(values.shopId)
 
     let piclist = this.imgParams('0', productPicUrlList, '1')
@@ -319,7 +308,7 @@ class AddGoods extends React.Component {
       productDetail: txtHtml,
       picList: imgArr,
       skuList,
-      marketPrice: (marketPriceMin || 0) + '-' + (marketPriceMax || 0),
+      // marketPrice: (marketPriceMin || 0) + '-' + (marketPriceMax || 0),
       majorLabels: this.arrayObjToarrstr(majorLabels),
       minorLabels: this.arrayObjToarrstr(minorLabels),
       categoryOneId,
@@ -606,8 +595,6 @@ class AddGoods extends React.Component {
         skuList[i][type] = value
         if (type === 'productPrice') {
           skuList[i].secKillPrice = value
-          skuList[i].comMemberPrice = value
-          skuList[i].memberPrice = value
           skuList[i].newPrice = value
           skuList[i].supplyPrice = value
         }
@@ -649,7 +636,7 @@ class AddGoods extends React.Component {
     }
 
     const { isEdit, majorLabels, minorLabels, showList, txtHtml, skuList,
-      categoryList, productPicUrl, productPicUrlList, saleTypeValue, videoPic, marketPriceMin, marketPriceMax } = this.state
+      categoryList, productPicUrl, productPicUrlList, saleTypeValue, videoPic } = this.state
     console.log(categoryList)
     // console.log(txtHtml)
     return (
@@ -845,6 +832,8 @@ class AddGoods extends React.Component {
 
                           <InputNumber className="price-input" value={item.originalPrice} min={0} placeholder="原价" onChange={e => this.priceChange(e, item.keyId, 'originalPrice')} />
                           <InputNumber className="price-input" value={item.productPrice} min={0} placeholder="售价" onChange={e => this.priceChange(e, item.keyId, 'productPrice')} />
+                          <InputNumber className="price-input" value={item.memberPrice} min={0} placeholder="会员价" onChange={e => this.priceChange(e, item.keyId, 'memberPrice')} />
+                          <InputNumber className="price-input" value={item.comMemberPrice} min={0} placeholder="企业会员价" onChange={e => this.priceChange(e, item.keyId, 'comMemberPrice')} />
                           <InputNumber className="price-input" value={item.stock} min={0} placeholder="库存" onChange={e => this.priceChange(e, item.keyId, 'stock')} />
                           {
                             item.status === 1 ?
@@ -861,7 +850,7 @@ class AddGoods extends React.Component {
               </Col>
             </Row>
 
-            <Row style={{ marginTop: 20 }}>
+            {/* <Row style={{ marginTop: 20 }}>
               <Col span={24}>
                 <div className="col-width-other">
                   <span className="col-title" style={{ width: 100 }}>市场参考价： </span>
@@ -886,7 +875,7 @@ class AddGoods extends React.Component {
                   </div>
                 </div>
               </Col>
-            </Row>
+            </Row> */}
           </Card>
 
           <Card title="视频配置" bordered={false}>

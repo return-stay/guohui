@@ -6,7 +6,8 @@ import { withRouter } from 'react-router-dom'
 import { searchJoint } from '../../../../utils'
 import request from '../../../../utils/request'
 import BaseForm from '../../../../common/BaseForm'
-import { ShopDelete, ShopRecommendShop, ShopRecommendShopCancel } from '../../../../config/api'
+import Gimage from '../../../../common/Gimage'
+import { ShopStatus, ShopRecommendShop, ShopRecommendShopCancel } from '../../../../config/api'
 import moment from 'moment'
 const { confirm } = Modal;
 class ShopManageTable extends React.Component {
@@ -14,7 +15,7 @@ class ShopManageTable extends React.Component {
     super()
     this.state = {
       urls: {
-        list: '/shop/search',
+        list: '/shop/v1/list',
         listMethod: 'post',
       },
       dataSource: shopManageData,
@@ -29,7 +30,7 @@ class ShopManageTable extends React.Component {
   handleEdit = (id) => {
     this.histroyPush({
       type: 'edit',
-      id: id,
+      shopId: id,
     })
   }
 
@@ -45,7 +46,7 @@ class ShopManageTable extends React.Component {
     this.props.history.push({
       pathname: '/user/goods/list',
       search: searchJoint({
-        shopId: item.shopId,
+        shopId: item.merchantId,
       })
     })
   }
@@ -118,12 +119,11 @@ class ShopManageTable extends React.Component {
       content: '您确认要删除此条数据吗？',
       onOk: () => {
         request({
-          url: ShopDelete,
+          url: ShopStatus,
           method: 'post',
-          params: { md5Str: localStorage.getItem('authed') },
           data: {
             shopId: item.shopId,
-            userId: 0
+            state: 3,
           }
         }).then(res => {
           if (res.code === 100) {
@@ -166,39 +166,48 @@ class ShopManageTable extends React.Component {
       return [
         {
           title: '店铺编号',
-          key: 'shopId',
-          dataIndex: 'shopId',
+          key: 'merchantId',
+          dataIndex: 'merchantId',
         },
         {
           title: '店铺logo',
-          key: 'shopLogo',
-          dataIndex: 'shopLogo',
-          render(shopLogo) {
-            return <img src={shopLogo} style={{ width: 30 }} alt="图片" />
+          key: 'logo',
+          dataIndex: 'logo',
+          render(logo) {
+            return <Gimage src={logo} style={{ height: 30 }} />
           }
         },
         {
           title: '店铺名称',
-          key: 'shopName',
-          dataIndex: 'shopName',
+          key: 'name',
+          dataIndex: 'name',
         },
         {
           title: '店铺级别',
-          key: 'authLevel',
-          dataIndex: 'authLevel',
-          render(authLevel) {
-            return (<span>{authLevel === 1 ? '优选' : '普通'}店铺</span>)
+          key: 'type',
+          dataIndex: 'type',
+          render(type) {
+            let str = ''
+            switch (type) {
+              case 0:
+                str = '普通店铺'
+                break;
+              case 1:
+                str = '优选店铺'
+                break;
+              case 2:
+                str = '自营店铺'
+                break;
+              default:
+                str = ''
+            }
+            return (<span>{str}</span>)
           }
         },
         {
-          title: '店主名称',
-          key: 'userName',
-          dataIndex: 'userName',
-        },
-        {
           title: '店铺类型',
-          key: 'shopType',
-          dataIndex: 'shopType',
+          key: 'attribute',
+          dataIndex: 'attribute',
           render(shopType) {
             let text = (shopType === 0) ? '个人' : '企业'
             return <span>{text}</span>
@@ -206,8 +215,24 @@ class ShopManageTable extends React.Component {
         },
         {
           title: '所属商户',
-          key: 'merchantName',
-          dataIndex: 'merchantName',
+          key: 'key',
+          dataIndex: 'merchantDTO',
+          render(merchantDTO) {
+            console.log(merchantDTO)
+            let str = ''
+            let strType = ''
+            if (merchantDTO) {
+              str = merchantDTO.name || merchantDTO.legalName
+              strType = merchantDTO.attribute === 1 ? '企业' : '个人'
+            }
+
+            return (<span>{strType + ' ' + str}</span>)
+          }
+        },
+        {
+          title: '商品数量',
+          key: 'productNum',
+          dataIndex: 'productNum',
         },
         {
           title: '关注量',
@@ -215,31 +240,54 @@ class ShopManageTable extends React.Component {
           dataIndex: 'followerNum',
         },
         {
-          title: '申请时间',
-          key: 'createTime',
-          dataIndex: 'createTime',
+          title: '审核状态',
+          key: 'state',
+          dataIndex: 'state',
+          render(state) {
+            let str = ''
+            switch (state) {
+              case 0:
+                str = '待审核'
+                break;
+              case 1:
+                str = '审核不通过'
+                break;
+              case 2:
+                str = '审核通过'
+                break;
+              default:
+                str = '删除'
+            }
+            return (<span>{str}</span>)
+          }
         },
         {
           title: '操作',
+          width: 200,
           render: (item) => {
             return (
               <>
                 <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { _this.handleEdit(item.shopId) }}>编辑店铺</span>
                 <Divider type="vertical" />
                 <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { _this.goodsManage(item) }}>商品管理</span>
-                <Divider type="vertical" />
                 {
                   item.authLevel === 1 && (
                     <>
+                      <Divider type="vertical" />
                       {
                         item.recommend === 0 ? <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { _this.recommend(item, 'add') }}>推荐</span>
                           : <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { _this.recommend(item, 'cancel') }}>取消推荐</span>
                       }
-                      <Divider type="vertical" />
                     </>
                   )
                 }
-                <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { _this.detele(item) }}>删除</span>
+                {
+                  item.state !== 3 && <>
+                    <Divider type="vertical" />
+                    <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { _this.detele(item) }}>删除</span>
+                  </>
+                }
+
               </>
             )
           }
@@ -247,7 +295,7 @@ class ShopManageTable extends React.Component {
       ]
     }
     const searchData = [
-      { type: 'input', field: 'shopName', label: '店铺信息' },
+      { type: 'input', field: 'keyword', label: '店铺名称' },
       { type: 'chooseTime', field: 'createTime', label: '创建时间', beginTime: 'startTime', EndTime: 'endTime' },
       {
         type: 'select', field: 'shopType', width: '170px', label: '类型', placeholder: '请选择店铺类型', list: [
@@ -262,9 +310,11 @@ class ShopManageTable extends React.Component {
         ]
       },
       {
-        type: 'select', field: 'available', width: '170px', label: '店铺状态', placeholder: '请选择店铺状态', list: [
-          { id: 0, value: 0, label: '有效' },
-          { id: 1, value: 1, label: '删除' }
+        type: 'select', field: 'state', width: '170px', label: '店铺状态', placeholder: '请选择店铺状态', list: [
+          { id: 0, value: 0, label: '待审核' },
+          { id: 1, value: 1, label: '审核不通过' },
+          { id: 2, value: 2, label: '审核通过' },
+          { id: 3, value: 3, label: '删除' }
         ]
       },
     ]

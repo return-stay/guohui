@@ -43,6 +43,7 @@ const bannerRouter = [
         component: Operation,
         name: '运营区管理',
         icon: 'deployment-unit',
+        isHide: true,
       },
       {
         path: '/user/banner/buyitnow',
@@ -50,6 +51,7 @@ const bannerRouter = [
         component: BuyItNow,
         name: '一口价管理',
         icon: 'pay-circle',
+        isHide: true,
       }
     ]
   },

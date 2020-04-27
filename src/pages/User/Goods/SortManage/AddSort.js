@@ -18,8 +18,8 @@ class AddSort extends React.Component {
     this.getList()
   }
 
-  //初始列表
-  getList = (id = 0) => {
+  //获取父类目列表
+  getList = (id = 0, callback) => {
     request({
       url: CategoryFindAllCate,
       params: {
@@ -36,6 +36,8 @@ class AddSort extends React.Component {
       }
       this.setState({
         selectArr: list
+      }, () => {
+        callback && callback()
       })
     })
   }
@@ -53,7 +55,7 @@ class AddSort extends React.Component {
           params.id = that.state.rows.id
         } else {
           url = CateAddCate
-          
+
         }
 
         request({
@@ -88,11 +90,21 @@ class AddSort extends React.Component {
 
   add = (rows) => {
     console.log(rows)
+    if (rows.isType === 'parent') {
+      this.getList(0, () => {
+        this.setAddValue(rows)
+      })
+    } else {
+      this.setAddValue(rows)
+    }
+
+  }
+
+  setAddValue = (rows) => {
     this.setState({
       title: '新增',
       isEdit: false,
       colorPicUrl: '',
-      ordinaryPicUrl: '',
       rows: null,
       isParentShow: rows.isType === 'parent' ? true : false
     });
@@ -109,25 +121,42 @@ class AddSort extends React.Component {
         })
       }
     }, 0);
-
   }
   edit = (rows) => {
+    if (rows.isType === 'parent') {
+      this.getList(0, () => {
+        this.setEditValue(rows)
+      })
+    } else {
+      this.setEditValue(rows)
+    }
+
+  }
+
+  setEditValue = (rows) => {
     this.setState({
       title: '编辑',
       isEdit: true,
       colorPicUrl: rows.colorPicUrl,
-      ordinaryPicUrl: rows.ordinaryPicUrl,
       rows: rows,
+      isParentShow: rows.isType === 'parent' ? true : false
     });
     this.modalShow()
     setTimeout(() => {
-
       this.props.form.setFieldsValue({
         name: rows.name,
         sort: rows.sort || 0,
         colorPicUrl: rows.colorPicUrl,
-        ordinaryPicUrl: rows.ordinaryPicUrl,
       })
+      if (rows.isType === 'parent') {
+        this.props.form.setFieldsValue({
+          parentId: rows.id
+        })
+      } else {
+        this.props.form.setFieldsValue({
+          parentId: null
+        })
+      }
     }, 0);
   }
 
@@ -141,12 +170,6 @@ class AddSort extends React.Component {
           colorPicUrl: imgurl
         })
         break;
-      case 'ordinaryPicUrl':
-        obj.ordinaryPicUrl = imgurl
-        this.props.form.setFieldsValue({
-          ordinaryPicUrl: imgurl
-        })
-        break;
       default:
         obj = {}
     }
@@ -156,7 +179,7 @@ class AddSort extends React.Component {
   }
 
   render() {
-    const { visible, loading, title, colorPicUrl, ordinaryPicUrl, selectArr, isParentShow } = this.state
+    const { visible, loading, title, colorPicUrl, selectArr, isParentShow } = this.state
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -166,6 +189,7 @@ class AddSort extends React.Component {
       <Modal
         title={title}
         visible={visible}
+        destroyOnClose={true}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
@@ -195,23 +219,19 @@ class AddSort extends React.Component {
             </Form.Item>
           }
 
+          {
+            isParentShow && <Form.Item label="图片">
+              {
+                getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
+                  <Gupload file={colorPicUrl} uploadButtonText="上传图片（80*80）" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
+                )
+              }
+            </Form.Item>
+          }
 
 
-          <Form.Item label="彩色图片">
-            {
-              getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
-                <Gupload file={colorPicUrl} uploadButtonText="上传图片" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
-              )
-            }
-          </Form.Item>
 
-          <Form.Item label="黑白图片">
-            {
-              getFieldDecorator('ordinaryPicUrl', { valuePropName: 'upload' })(
-                <Gupload file={ordinaryPicUrl} uploadButtonText="上传图片" success={img => this.uploadSuccessCallback(img, 'ordinaryPicUrl')} />
-              )
-            }
-          </Form.Item>
+
           <Form.Item label="排序">
             <div>
               {getFieldDecorator('sort', { valuePropName: 'value', initialValue: 0 })(

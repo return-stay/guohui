@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { Table, Input, Button, Form, Divider } from 'antd';
+import { Table, Input, Button, Form, Divider, message } from 'antd';
 
 import AddSort from './AddSort'
 import request from '../../../../utils/request'
-import { CategoryFindAllCate } from '../../../../config/api'
+import { CategoryFindAllCate, CateUpdateCate } from '../../../../config/api'
 // import './index.less'
 
 const EditableContext = React.createContext();
@@ -104,27 +104,32 @@ class SortManage extends React.Component {
         align: 'center'
       },
       {
-        title: '标签名称',
+        title: '分类名称',
         dataIndex: 'name',
         key: 'name',
         width: '25%',
       },
       {
-        title: '彩色图片',
+        title: '分类图片',
         dataIndex: 'colorPicUrl',
         key: 'colorPicUrl',
         render(ordinaryPicUrl) {
-          return <img src={ordinaryPicUrl} style={{ height: 30 }} alt="图片" />
+          if (ordinaryPicUrl) {
+            return <img src={ordinaryPicUrl} style={{ height: 30 }} alt="图片" />
+          } else {
+            return ''
+          }
+
         }
       },
-      {
-        title: '黑白图片',
-        dataIndex: 'ordinaryPicUrl',
-        key: 'ordinaryPicUrl',
-        render(ordinaryPicUrl) {
-          return <img src={ordinaryPicUrl} style={{ height: 30 }} alt="图片" />
-        }
-      },
+      // {
+      //   title: '黑白图片',
+      //   dataIndex: 'ordinaryPicUrl',
+      //   key: 'ordinaryPicUrl',
+      //   render(ordinaryPicUrl) {
+      //     return <img src={ordinaryPicUrl} style={{ height: 30 }} alt="图片" />
+      //   }
+      // },
       {
         title: '排序',
         dataIndex: 'sort',
@@ -140,13 +145,13 @@ class SortManage extends React.Component {
             <div style={{ textAlign: 'center' }}>
               {
                 item.isType === 'parent' && <>
-                  <span style={{ color: '#1890ff' }} onClick={(e) => { this.handleAdd(item) }}>添加</span>
+                  <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={(e) => { this.handleAdd(item) }}>添加</span>
                   <Divider type="vertical" />
                 </>
               }
-              <span style={{ color: '#1890ff' }} onClick={(e) => { this.edit(item) }}>编辑</span>
+              <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={(e) => { this.edit(item) }}>编辑</span>
               <Divider type="vertical" />
-              <span style={{ color: '#1890ff' }} onClick={() => { this.handleDelete(item) }}>删除</span>
+              <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { this.handleDelete(item) }}>删除</span>
             </div>
           )
         }
@@ -253,9 +258,21 @@ class SortManage extends React.Component {
     console.log(this.state.selectedRowKeys)
   }
 
-  handleDelete = key => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+  handleDelete = item => {
+    // const dataSource = [...this.state.dataSource];
+    // this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+    console.log(item)
+    request({
+      url: CateUpdateCate,
+      params: {
+        cateId: item.id
+      }
+    }).then(res => {
+      if (res.code === 100) {
+        message.success('删除成功')
+        this.getList()
+      }
+    })
   };
 
   handleAdd = (item) => {

@@ -15,8 +15,7 @@ const QueryByOwenerIdAndOwnerType = '/api/productCategory/listByParentId'; //获
 
 const CategoryFindAllCate = '/cate/queryCate' //商品类目GET /category/findAllCate
 const CateAddCate = '/cate/addCate' //商品类目添加
-const CateUpdateCate = '/cate/updateCate' //更新类目
-
+const CateUpdateCate = '/cate/updateCate' //删除类目
 
 const CategoryFindAllCateId = '/cate/queryCate' //商品类目
 
@@ -32,6 +31,7 @@ const ProductList = 'product/search'
 const ProductDetail = '/product/v1/detail' //商品详情
 const ProductUpdate = '/product/v1/update' //更新商品
 const ProductspecDelete = '/productspec/delete' //删除
+const ProductCheckState = '/product/v1/checkState'
 const ProductBatchDeleteSpec = '/product/batchDeleteSpec' //批量删除商品规格
 const ProductOnSpec = '/product/onSpec' //上架
 const ProductOffSpec = '/product/offSpec' //下架
@@ -39,11 +39,12 @@ const ProductBatchOffSpec = '/product/batchOffSpec' //批量下架
 const ProductBatchOnSpec = '/product/batchOnSpec' //批量上架
 
 // 商铺相关接口
-const ShopAdd = '/shop/add' //添加商铺
+const ShopAdd = '/shop/v1/add' //添加商铺
 const ShopDelete = '/shop/delete' //删除商铺
-const ShopDetial = '/shop/detail' //商铺详情
-const ShopSearch = '/shop/search' //商铺列表 搜索商铺
-const ShopUpdate = '/shop/update' //更新商铺
+const ShopDetial = '/shop/v1/info' //商铺详情
+const ShopSearch = '/shop/v1/list' //商铺列表 搜索商铺
+const ShopUpdate = '/shop/v1/edit' //更新商铺
+const ShopStatus = '/shop/v1/status'
 const ShopRecommendShop = '/shop/recommendShop' //推荐店铺
 const ShopRecommendShopCancel = '/shop/recommendShopCancel' //取消店铺推荐
 
@@ -99,6 +100,7 @@ export {
   ProductDetail,
   ProductBatchDeleteSpec,
   ProductspecDelete,
+  ProductCheckState,
   ProductOnSpec,
   ProductOffSpec,
   ProductBatchOffSpec,
@@ -109,6 +111,7 @@ export {
   ShopDetial,
   ShopSearch,
   ShopUpdate,
+  ShopStatus,
   ShopRecommendShop,
   ShopRecommendShopCancel,
 

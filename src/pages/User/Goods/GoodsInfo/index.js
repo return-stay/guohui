@@ -10,7 +10,7 @@ class GoodsInfo extends React.Component {
   constructor() {
     super()
     this.state = {
-      info: {},
+      info: { shopDTO: {} },
       title: 'lll',
       majorLabels: [], //商品主标签
       minorLabels: [], //商品副标题
@@ -102,7 +102,7 @@ class GoodsInfo extends React.Component {
                 <div className="col-width">
                   <Form.Item label=" " colon={false} {...formInfoLayout}>
                     <p>所属店铺：</p>
-                    <span>{info.shopName}</span>
+                    <span>{info.shopDTO.shopName}</span>
                   </Form.Item>
                 </div>
               </Col>
@@ -213,14 +213,14 @@ class GoodsInfo extends React.Component {
                 </Row>
               </Col>
             </Row>
-            <Row style={{ marginTop: 20 }}>
+            {/* <Row style={{ marginTop: 20 }}>
               <Col span={24}>
                 <div className="col-width-other">
                   <span className="col-title" style={{ width: 100 }}>市场参考价： </span>
                   <span>￥{info.marketPrice}</span>
                 </div>
               </Col>
-            </Row>
+            </Row> */}
           </Card>
 
           {

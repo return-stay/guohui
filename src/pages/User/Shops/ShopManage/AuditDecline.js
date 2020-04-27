@@ -1,7 +1,7 @@
 import React from 'react'
 import request from '../../../../utils/request'
 import { Modal, Input, message } from 'antd'
-import { MerchantAuditReject } from '../../../../config/api'
+import { ShopStatus } from '../../../../config/api'
 const { TextArea } = Input
 export default class AuditDecline extends React.Component {
   constructor() {
@@ -43,12 +43,13 @@ export default class AuditDecline extends React.Component {
       let merchantId = this.state.merchantId
 
       request({
-        url: MerchantAuditReject,
+        url: ShopStatus,
         method: 'post',
-        params: { md5Str: localStorage.getItem('authed') },
         data: {
-          merchantId,
-          reason: text
+          shopId:merchantId,
+          state: 1,
+          operator: 'admin',
+          // reason: text
         }
       }).then(res => {
         message.success('不通过审核设置成功')
