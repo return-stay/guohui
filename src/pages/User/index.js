@@ -8,7 +8,7 @@ import { getMenuItem, filterRoutes } from '../../utils'
 import { Layout, Menu, Icon, Tooltip } from 'antd'
 // import logo from '../../asset/login/logo
 
-// import logo_text_en from '../../asset/login/logo_text_en.png'
+import WechatIMG236 from '../../asset/login/WechatIMG236.jpeg'
 // import { recursionRouterTwo } from '../../utils/recursion-router'
 const { Header, Content, Sider } = Layout
 
@@ -181,7 +181,6 @@ class LeftMeun extends React.Component {
         const { permissionList } = this.props.state
         const { defaultOpenKeys } = this.props
         const menuChild = this.actionMenu()
-        console.log(menuChild)
         const { collapsed } = this.state
         return (
             <div className="menu-box" style={{ display: 'flex' }}>
@@ -189,7 +188,9 @@ class LeftMeun extends React.Component {
                 <div className="left-menu-box">
                     <div className="logo-text">
                         {/* <img src={logo_text_zh} alt="logo" /> */}
-                        <p style={{ color: '#fff' }}>国惠</p>
+                        {/* <p style={{ color: '#fff' }}>国惠</p> */}
+                        <p>国惠</p>
+                        <p>商城</p>
                     </div>
                     {
                         permissionList.map((item, index) => {
@@ -215,8 +216,8 @@ class LeftMeun extends React.Component {
                                     <p>在线</p>
                                 </> : <img src={logo} alt="logo" />
                         } */}
-                    {/* <img src={logo} alt="logo" /> */}
-                    <div>国惠</div>
+                    <img src={WechatIMG236} alt="logo" />
+                    {/* <div>国惠</div> */}
                 </div>
 
                 {

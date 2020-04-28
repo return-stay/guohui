@@ -123,6 +123,7 @@ class AddSort extends React.Component {
     }, 0);
   }
   edit = (rows) => {
+    console.log(rows)
     if (rows.isType === 'parent') {
       this.getList(0, () => {
         this.setEditValue(rows)
@@ -139,7 +140,7 @@ class AddSort extends React.Component {
       isEdit: true,
       colorPicUrl: rows.colorPicUrl,
       rows: rows,
-      isParentShow: rows.isType === 'parent' ? true : false
+      isParentShow: rows.isType === 'parent' ? false : true
     });
     this.modalShow()
     setTimeout(() => {
@@ -219,17 +220,30 @@ class AddSort extends React.Component {
             </Form.Item>
           }
 
+
+
+          {
+            !isParentShow && <div className="bid-img">
+              <Form.Item label="图片">
+
+                {
+                  getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
+                    <Gupload file={colorPicUrl} className="sortClass" uploadButtonText="上传图片（522*242）" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
+                  )
+                }
+              </Form.Item>
+            </div>
+          }
+
           {
             isParentShow && <Form.Item label="图片">
               {
                 getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
-                  <Gupload file={colorPicUrl} uploadButtonText="上传图片（80*80）" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
+                  <Gupload file={colorPicUrl} uploadButtonText="上传图片（156*156）" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
                 )
               }
             </Form.Item>
           }
-
-
 
 
           <Form.Item label="排序">

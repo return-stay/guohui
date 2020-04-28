@@ -347,17 +347,16 @@ export default class GoodsList extends React.Component {
                 {
                     title: '类目',
                     key: 'categoryOneName',
-                    dataIndex: 'categoryOneName',
-                    width: 100,
-                    render(categoryOneName) {
-                        return <span>{categoryOneName}</span>
+                    width: 160,
+                    render(item) {
+                        return <span>{item.categoryOneName}/{item.categoryTwoName}</span>
                     }
                 },
 
                 {
                     title: '现价',
-                    key: 'productPrice',
-                    dataIndex: 'productPrice',
+                    key: 'salePrice',
+                    dataIndex: 'salePrice',
                     width: 100,
                 },
                 {
@@ -366,16 +365,16 @@ export default class GoodsList extends React.Component {
                     dataIndex: 'originalPrice',
                     width: 100,
                 },
-                {
-                    title: '会员价',
-                    key: 'memberPrice',
-                    dataIndex: 'memberPrice',
-                    width: 100,
-                },
+                // {
+                //     title: '企业会员价',
+                //     key: 'comMemberPrice',
+                //     dataIndex: 'comMemberPrice',
+                //     width: 100,
+                // },
                 {
                     title: '库存',
-                    key: 'stock',
-                    dataIndex: 'stock',
+                    key: 'productStock',
+                    dataIndex: 'productStock',
                     width: 100,
                 },
                 {
@@ -402,10 +401,10 @@ export default class GoodsList extends React.Component {
                                 str = '待上架'
                                 break;
                             case 1:
-                                str = '以上架'
+                                str = '已上架'
                                 break;
                             case 2:
-                                str = '以下架'
+                                str = '已下架'
                                 break;
                             default:
                                 str = '删除'
@@ -430,9 +429,12 @@ export default class GoodsList extends React.Component {
                         return (
                             <>
                                 <span style={spanStyle} onClick={() => { this.checkDetiai(item) }}>查看详情</span>
-                                <Divider type="vertical" />
-                                <span style={spanStyle} onClick={() => this.editGoods(item)}>编辑商品</span>
-
+                                {
+                                    item.status !== 3 && <>
+                                        <Divider type="vertical" />
+                                        <span style={spanStyle} onClick={() => this.editGoods(item)}>编辑商品</span>
+                                    </>
+                                }
                                 {item.status === 0 && <>
                                     <Divider type="vertical" />
                                     <span style={spanStyle} onClick={(e) => this.onoroffShelves(item, 'on')}>发布</span>

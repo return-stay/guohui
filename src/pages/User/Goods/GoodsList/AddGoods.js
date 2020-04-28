@@ -1,6 +1,6 @@
 import React from 'react'
-import { ProductDetail, ProductUpdate, ProductAdd, CategoryFindAllCate,ShopSearch } from '../../../../config/api'
-import { Button, Form, Input, InputNumber, Icon, message, Row, Col, Radio, Select, Cascader, Card, DatePicker, PageHeader } from 'antd'
+import { ProductDetail, ProductUpdate, ProductAdd, CategoryFindAllCate, ShopSearch, DeleteSku, ProductUpDownSku } from '../../../../config/api'
+import { Button, Form, Input, InputNumber, Icon, message, Row, Col, Radio, Select, Cascader, Card, DatePicker, PageHeader, Modal } from 'antd'
 import { getOptionsList } from '../../../../utils'
 import request from '../../../../utils/request'
 import './index.less'
@@ -21,7 +21,7 @@ class AddGoods extends React.Component {
       typeValue: 1,
       skuList: [
         {
-          keyId: 0,
+          keyId: 1000000000,
           specParam: '',
           status: 0
         }
@@ -43,18 +43,19 @@ class AddGoods extends React.Component {
 
   getIdOptions = (id) => {
     let list = this.state.categoryList
-    for(let i = 0;i<list.length;i++) {
-      if(id === list[i].id) {
+    for (let i = 0; i < list.length; i++) {
+      if (id === list[i].id) {
         return list[i]
       }
     }
   }
 
   componentDidMount() {
-    this.getShowList() 
-    this.getCategoryFindAllCate() 
+    this.getShowList()
+    this.getCategoryFindAllCate()
     // let searchObj = dismantleSearch(this)
     const searchObj = this.props
+    console.log(searchObj)
     this.setState({
       ...searchObj
     })
@@ -119,9 +120,9 @@ class AddGoods extends React.Component {
       } else {
         this.setState({
           categoryList: list
-        },()=>{
-          callback&& callback(list)
-        })  
+        }, () => {
+          callback && callback(list)
+        })
       }
     })
   }
@@ -129,7 +130,7 @@ class AddGoods extends React.Component {
   add = () => { }
 
   getOption = (productCategoryId) => {
-    this.getCategoryFindAllCate(null, (parens)=> {
+    this.getCategoryFindAllCate(null, (parens) => {
       const targetOption = this.getIdOptions(productCategoryId[0]);
       targetOption.loading = true;
       this.getCategoryFindAllCate(productCategoryId[0], (list) => {
@@ -160,6 +161,8 @@ class AddGoods extends React.Component {
         saleType: resdata.saleType,
         freeShipping: resdata.freeShipping,
         recommendation: resdata.recommendation,
+        productUnit: resdata.productUnit,
+        serviceDesc: resdata.serviceDesc,
       }
 
       this.getOption([resdata.categoryOneId, resdata.categoryTwoId])
@@ -192,7 +195,7 @@ class AddGoods extends React.Component {
       // let marketPriceArr = resdata.marketPrice ? resdata.marketPrice.split('-') : []
 
       this.setState({
-        skuList: resdata.skuList,
+        skuList: this.setKeyId(resdata.skuList),
         saleStartTime: resdata.saleStartTime,
         saleEndTime: resdata.saleEndTime,
         txtHtml: resdata.productDetail,
@@ -211,6 +214,13 @@ class AddGoods extends React.Component {
       })
     })
 
+  }
+
+  setKeyId = (arr) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].keyId = arr[i].skuId
+    }
+    return arr
   }
 
   arrReturnNewarr = (arr) => {
@@ -567,8 +577,40 @@ class AddGoods extends React.Component {
   }
 
   deleteSku = (e) => {
-    let id = e.currentTarget.getAttribute('data-id')
-    console.log(id)
+    let id = Number(e.currentTarget.getAttribute('data-id'))
+    let productId = this.state.id
+
+    if (id < 100000) {
+      request({
+        url: DeleteSku,
+        method: 'post',
+        data: {
+          skuId: id,
+          productId: productId,
+          operator: 'admin'
+        }
+      }).then(res => {
+        if (res.code === 100) {
+          message.success('删除规格成功')
+          this.deleSkulist(id)
+        }
+      })
+    } else {
+      this.deleSkulist(id)
+    }
+
+  }
+
+  deleSkulist = (id) => {
+    let skuList = this.state.skuList
+    for (let i = 0; i < skuList.length; i++) {
+      if (skuList[i].keyId === id) {
+        skuList.splice(i, 1)
+      }
+    }
+    this.setState({
+      skuList
+    })
   }
 
   priceChange = (e, id, type) => {
@@ -584,7 +626,38 @@ class AddGoods extends React.Component {
   }
 
   statusChange = (value, id) => {
-    this.reasonIdSetValue(value, id, 'status')
+    const that = this
+    if (id > 1000000) {
+      this.reasonIdSetValue(value, id, 'status')
+    } else {
+      let str = ''
+      if (value === 2) {
+        str = '下架'
+      } else {
+        str = '上架'
+      }
+      Modal.confirm({
+        content: '确定' + str + '吗？',
+        onOk: () => {
+          request({
+            url: ProductUpDownSku,
+            method: 'post',
+            data: {
+              operator: 'admin',
+              skuId: id,
+              state: value,
+            }
+          }).then(res => {
+            if (res.code === 100) {
+              message.success(str + '成功');
+              that.reasonIdSetValue(value, id, 'status')
+            } else {
+              message.error(res.message)
+            }
+          })
+        }
+      })
+    }
   }
 
   reasonIdSetValue = (value, id, type) => {
@@ -596,6 +669,7 @@ class AddGoods extends React.Component {
         if (type === 'productPrice') {
           skuList[i].secKillPrice = value
           skuList[i].newPrice = value
+          skuList[i].memberPrice = value
           skuList[i].supplyPrice = value
         }
       }
@@ -744,8 +818,11 @@ class AddGoods extends React.Component {
                 </div>
               </Col>
               <Col span={8}>
-                <div className="col-width" style={{ display: 'none' }}>
-                  <p>商品三级标签</p>
+                <div className="col-width">
+                  <Form.Item label=" " colon={false} {...formItemLayout}>
+                    <p>商品单位</p>
+                    {getFieldDecorator('productUnit', { valuePropName: 'value' })(<Input placeholder='请输入商品单位' />)}
+                  </Form.Item>
                 </div>
               </Col>
             </Row>
@@ -791,7 +868,6 @@ class AddGoods extends React.Component {
                   )}
                 </div>
               </Col>
-
             </Row>
 
             <Row >
@@ -816,6 +892,21 @@ class AddGoods extends React.Component {
               </Col>
 
             </Row>
+
+            <Row >
+              <Col span={24}>
+                <div className="col-width" style={{ display: 'flex', alignItems: 'center' }}>
+                  <span className="col-title">服务说明：</span>
+                  {getFieldDecorator('serviceDesc', { valuePropName: 'value' })(
+                    <Input style={{ width: 400 }} placeholder='请输入服务说明' />
+                  )}
+
+                  <span style={{ color: '#ccc', marginLeft: 14 }}>提示： 多个说明用，隔开</span>
+                </div>
+              </Col>
+
+            </Row>
+
           </Card>
 
           <Card title="商品规格" bordered={false}>
@@ -832,7 +923,6 @@ class AddGoods extends React.Component {
 
                           <InputNumber className="price-input" value={item.originalPrice} min={0} placeholder="原价" onChange={e => this.priceChange(e, item.keyId, 'originalPrice')} />
                           <InputNumber className="price-input" value={item.productPrice} min={0} placeholder="售价" onChange={e => this.priceChange(e, item.keyId, 'productPrice')} />
-                          <InputNumber className="price-input" value={item.memberPrice} min={0} placeholder="会员价" onChange={e => this.priceChange(e, item.keyId, 'memberPrice')} />
                           <InputNumber className="price-input" value={item.comMemberPrice} min={0} placeholder="企业会员价" onChange={e => this.priceChange(e, item.keyId, 'comMemberPrice')} />
                           <InputNumber className="price-input" value={item.stock} min={0} placeholder="库存" onChange={e => this.priceChange(e, item.keyId, 'stock')} />
                           {

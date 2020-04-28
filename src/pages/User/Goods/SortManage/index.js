@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Table, Input, Button, Form, Divider, message } from 'antd';
+import { Table, Input, Button, Form, Divider, message, Modal } from 'antd';
 
 import AddSort from './AddSort'
 import request from '../../../../utils/request'
@@ -262,17 +262,25 @@ class SortManage extends React.Component {
     // const dataSource = [...this.state.dataSource];
     // this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
     console.log(item)
-    request({
-      url: CateUpdateCate,
-      params: {
-        cateId: item.id
-      }
-    }).then(res => {
-      if (res.code === 100) {
-        message.success('删除成功')
-        this.getList()
-      }
+    const that = this
+    Modal.confirm({
+      title: '提示',
+      content: '确定删除该类目吗?',
+      onOk() {
+        request({
+          url: CateUpdateCate,
+          params: {
+            cateId: item.id
+          }
+        }).then(res => {
+          if (res.code === 100) {
+            message.success('删除成功')
+            that.getList()
+          }
+        })
+      },
     })
+
   };
 
   handleAdd = (item) => {

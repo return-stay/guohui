@@ -50,11 +50,12 @@
   }
 
   .upload-img-class {
-    width: 100%;
+    height: 100%;
   }
 
   .upload-video-box {
     position: relative;
+    height: 200px;
     .upload-video-box-close {
       position: absolute;
       display: none;
@@ -72,6 +73,15 @@
   .upload-video-box:hover {
     .upload-video-box-close {
       display: flex;
+    }
+  }
+
+  .sortClass {
+    .ant-upload,
+    .ant-upload.ant-upload-select-picture-card,
+    .ant-upload-list-picture-card .ant-upload-list-item {
+      width: 211px;
+      height: 121px;
     }
   }
 }

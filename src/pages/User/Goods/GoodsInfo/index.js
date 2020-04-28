@@ -142,8 +142,11 @@ class GoodsInfo extends React.Component {
                 </div>
               </Col>
               <Col span={8}>
-                <div className="col-width" style={{ display: 'none' }}>
-                  <p>商品三级标签</p>
+                <div className="col-width">
+                  <Form.Item label=" " colon={false} {...formInfoLayout}>
+                    <p>商品名称：</p>
+                    <span>{info.unit}</span>
+                  </Form.Item>
                 </div>
               </Col>
             </Row>

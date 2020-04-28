@@ -90,6 +90,7 @@ class ShopDetail extends React.Component {
   // 通过审核
   getApproved = () => {
     const id = this.state.id
+    const that = this
     confirm({
       title: '提示',
       content: '确认通过审核吗？',
@@ -104,7 +105,7 @@ class ShopDetail extends React.Component {
           }
         }).then(res => {
           message.success('通过审核')
-          // that.init()
+          that.init()
           // that.createShop()
         })
       },

@@ -68,7 +68,7 @@ class InTheAudit extends React.Component {
   }
 
   failTheAudit = (item) => {
-    this.audtChild.show(item.merchantId)
+    this.audtChild.show(item.shopId)
   }
   // 通过审核
   getApproved = (item) => {
@@ -81,7 +81,7 @@ class InTheAudit extends React.Component {
           url: ShopStatus,
           method: 'post',
           data: {
-            shopId: item.merchantId,
+            shopId: Number(item.shopId),
             state: 2,
             operator: 'admin',
           }
@@ -218,12 +218,12 @@ class InTheAudit extends React.Component {
     }
 
     const searchData = [
-      { type: 'input', field: 'nameOrMobile', label: '姓名/手机号' },
+      { type: 'input', field: 'keyword', label: '店铺名称' },
       { type: 'chooseTime', field: 'date', label: '申请时间', beginTime: 'startTime', EndTime: 'endTime' },
       {
-        type: 'select', field: 'type', width: '170px', label: '类型', placeholder: "请选择申请类型", list: [
-          { id: 0, value: '0', label: '企业' },
-          { id: 1, value: '1', label: '个人' },
+        type: 'select', field: 'shopType', width: '170px', label: '类型', placeholder: "请选择申请类型", list: [
+          { id: 0, value: 0, label: '企业' },
+          { id: 1, value: 1, label: '个人' },
         ]
       },
     ]

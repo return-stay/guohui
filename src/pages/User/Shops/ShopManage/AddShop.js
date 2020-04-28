@@ -102,6 +102,7 @@ class AddShop extends React.Component {
         type: resdata.type,
         shopDesc: resdata.shopDesc,
         tag: resdata.tag,
+        shopMobile: resdata.shopMobile,
       }
       this.setState({
         merchantId: merchantDTO.id,
@@ -174,6 +175,7 @@ class AddShop extends React.Component {
           // mainBiz: tradeIds,
           reason: values.reason,
           recommend: values.recommend,
+          shopMobile: values.shopMobile,
           shopDesc: values.shopDesc,
           stars: values.stars,
           tag: values.tag,
@@ -392,10 +394,12 @@ class AddShop extends React.Component {
                 </Select>
               )}
             </Form.Item>
+            <Form.Item label="店长手机号">
+              {getFieldDecorator('shopMobile', { valuePropName: 'value' })(<Input style={inputStyle} />)}
+            </Form.Item>
             <Form.Item label="店铺标签">
               {getFieldDecorator('tag', { valuePropName: 'value' })(<Input style={inputStyle} />)}
             </Form.Item>
-
             <Form.Item label="店铺星级">
               {getFieldDecorator('stars', { valuePropName: 'value' })(<Rate />)}
             </Form.Item>

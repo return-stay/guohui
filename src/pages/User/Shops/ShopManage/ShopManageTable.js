@@ -218,7 +218,6 @@ class ShopManageTable extends React.Component {
           key: 'key',
           dataIndex: 'merchantDTO',
           render(merchantDTO) {
-            console.log(merchantDTO)
             let str = ''
             let strType = ''
             if (merchantDTO) {

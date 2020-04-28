@@ -31,8 +31,10 @@ const ProductList = 'product/search'
 const ProductDetail = '/product/v1/detail' //商品详情
 const ProductUpdate = '/product/v1/update' //更新商品
 const ProductspecDelete = '/productspec/delete' //删除
+const DeleteSku = '/product/v1/deleteSku' // 删除sku
 const ProductCheckState = '/product/v1/checkState'
 const ProductBatchDeleteSpec = '/product/batchDeleteSpec' //批量删除商品规格
+const ProductUpDownSku = '/product/v1/upDownSku' //sku上下架
 const ProductOnSpec = '/product/onSpec' //上架
 const ProductOffSpec = '/product/offSpec' //下架
 const ProductBatchOffSpec = '/product/batchOffSpec' //批量下架
@@ -99,7 +101,9 @@ export {
   ProductUpdate,
   ProductDetail,
   ProductBatchDeleteSpec,
+  ProductUpDownSku,
   ProductspecDelete,
+  DeleteSku,
   ProductCheckState,
   ProductOnSpec,
   ProductOffSpec,

@@ -46,10 +46,10 @@ export default class AuditDecline extends React.Component {
         url: ShopStatus,
         method: 'post',
         data: {
-          shopId:merchantId,
+          shopId: Number(merchantId),
           state: 1,
           operator: 'admin',
-          // reason: text
+          reason: text
         }
       }).then(res => {
         message.success('不通过审核设置成功')
