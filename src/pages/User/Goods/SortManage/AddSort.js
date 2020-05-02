@@ -75,11 +75,15 @@ class AddSort extends React.Component {
 
   };
 
-  handleCancel = e => {
+  handleCancel = () => {
     this.setState({
       visible: false,
       loading: false,
+      colorPicUrl: '',
     });
+    this.props.form.setFieldsValue({
+      colorPicUrl: null
+    })
   };
 
   modalShow = () => {
@@ -135,6 +139,7 @@ class AddSort extends React.Component {
   }
 
   setEditValue = (rows) => {
+    console.log(rows)
     this.setState({
       title: '编辑',
       isEdit: true,
@@ -155,7 +160,7 @@ class AddSort extends React.Component {
         })
       } else {
         this.props.form.setFieldsValue({
-          parentId: null
+          parentId: rows.parentId
         })
       }
     }, 0);
@@ -227,7 +232,7 @@ class AddSort extends React.Component {
               <Form.Item label="图片">
 
                 {
-                  getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
+                  getFieldDecorator('colorPicUrl', { valuePropName: 'upload', rules: [{ required: true, message: '请输入上传图片' }] })(
                     <Gupload file={colorPicUrl} className="sortClass" uploadButtonText="上传图片（522*242）" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
                   )
                 }
@@ -238,7 +243,7 @@ class AddSort extends React.Component {
           {
             isParentShow && <Form.Item label="图片">
               {
-                getFieldDecorator('colorPicUrl', { valuePropName: 'upload' })(
+                getFieldDecorator('colorPicUrl', { valuePropName: 'upload', rules: [{ required: true, message: '请输入上传图片' }] })(
                   <Gupload file={colorPicUrl} uploadButtonText="上传图片（156*156）" success={img => this.uploadSuccessCallback(img, 'colorPicUrl')} />
                 )
               }

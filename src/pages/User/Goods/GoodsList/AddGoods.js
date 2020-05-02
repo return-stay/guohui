@@ -190,7 +190,6 @@ class AddGoods extends React.Component {
           console.log(bannerList[i].picUrl)
           videoPic = bannerList[i].picUrl
         }
-
       }
       // let marketPriceArr = resdata.marketPrice ? resdata.marketPrice.split('-') : []
 
@@ -711,7 +710,7 @@ class AddGoods extends React.Component {
 
     const { isEdit, majorLabels, minorLabels, showList, txtHtml, skuList,
       categoryList, productPicUrl, productPicUrlList, saleTypeValue, videoPic } = this.state
-    console.log(categoryList)
+    // console.log(categoryList)
     // console.log(txtHtml)
     return (
       <div className="add-goods-box">
