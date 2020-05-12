@@ -19,7 +19,7 @@ const CateUpdateCate = '/cate/updateCate' //删除类目
 
 const CategoryFindAllCateId = '/cate/queryCate' //商品类目
 
-const LogisticsList = '/logistics/logisticsList' //获取物流公司
+const LogisticsList = '/common/logistics/search' //获取物流公司
 
 const CategoryQueryProductTypeAttributes =  '/category/queryProductTypeAttributes' //根据类目查询商品属性
 const CategoryQueryProductIdAttributes = '/category/queryProductIdAttributes' //根据id 查询数据
@@ -52,9 +52,12 @@ const ShopRecommendShopCancel = '/shop/recommendShopCancel' //取消店铺推荐
 
 // 订单相关接口
 const OrderAgree = '/order/agree' // 同意退款
-const OrderDelivery = '/order/delivery' // 发货
-const OrderDetailApi = '/order/detail' // 订单详情
+const OrderDelivery = '/order/v1/deliver' // 发货
+const OrderMainDetail = '/order/v1/mainDetail' //主订单详情 
+const OrderDetailApi = '/order/v1/detail' // 子订单订单详情
 const OrderReject = '/order/reject' // 拒绝退款
+const OrderDelete = '/order/v1/delete' //删除订单
+const OrderCancel = '/order/v1/cancel' //取消订单
 
 // 商户管理
 const MerchantAuditReject  = '/merchant/audit/reject' //不通过审核
@@ -121,8 +124,11 @@ export {
 
   OrderAgree,
   OrderDelivery,
+  OrderMainDetail,
   OrderDetailApi,
   OrderReject,
+  OrderDelete,
+  OrderCancel,
 
   MerchantAuditReject,
   MerchantAuditPass,

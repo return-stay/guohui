@@ -20,6 +20,7 @@ import marketingRouter from './router/marketingRouter'
 // import integralRouter from './router/integralRouter'
 // import couponRouter from './router/couponRouter'
 import bannerRouter from './router/bannerRouter'
+import longhairRouter from './router/longhairRouter'
 // import Index from './pages/User/Home'
 const Index = () => AsyncComponent(()=> import('./pages/User/Home'))
 const routerDevelop = [
@@ -73,6 +74,7 @@ const routerDevelop = [
   // ...distributionsRouter,
   // ...systemsRouter,
   ...marketingRouter,
+  ...longhairRouter,
   // ...micromallsRouter,
   // ...appsRouter,
   // ...appletsRouter,

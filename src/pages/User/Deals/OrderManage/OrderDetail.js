@@ -7,12 +7,14 @@ import request from '../../../../utils/request'
 import './index.less'
 const { Panel } = Collapse;
 const { Step } = Steps;
+
 export default class OrderDetail extends React.Component {
   constructor() {
     super()
     this.state = {
-      info: { OrderDetails: [], express: {} },
-
+      childDTO: { productDTOList: [] },
+      info: { OrderDetails: [], express: {}, addressDTO: {} },
+      payDTO: {},
     }
   }
   componentDidMount() {
@@ -21,11 +23,17 @@ export default class OrderDetail extends React.Component {
       ...obj
     })
     request({
-      url: OrderDetailApi + '/' + obj.id,
-      params: { md5Str: localStorage.getItem('authed') },
+      url: OrderDetailApi,
+      params: {
+        childOrderNo: obj.id,
+        md5Str: localStorage.getItem('authed')
+      },
     }).then(res => {
+      console.log(res.data.payDTO)
       this.setState({
-        info: res.data
+        info: res.data,
+        childDTO: res.data.childDTO,
+        payDTO: res.data.payDTO || {},
       })
     })
   }
@@ -41,23 +49,23 @@ export default class OrderDetail extends React.Component {
     } else {
       message.warning('暂无物流详细信息')
     }
-
   }
+
   render() {
-    const { info } = this.state
-    let payTypeText = ''
-    let payType = info.payType
-    if(payType === 'WX-JSAPI') {
-      payTypeText = '微信支付'
-    }else if(payType === 'WX-APP') {
-      payTypeText = '微信APP支付'
-    }else if(payType === 'ALI-PAY') {
-      payTypeText = '支付宝'
-    }else if(payType === 'BALANCE') {
-      payTypeText = '余额'
-    }else if(payType === 'TRANSFER') {
-      payTypeText = '转账'
-    }
+    const { info, childDTO,payDTO } = this.state
+    // let payTypeText = ''
+    // let payType = payDTO.payType
+    // if (payType === 'WX-JSAPI') {
+    //   payTypeText = '微信支付'
+    // } else if (payType === 'WX-APP') {
+    //   payTypeText = '微信APP支付'
+    // } else if (payType === 'ALI-PAY') {
+    //   payTypeText = '支付宝'
+    // } else if (payType === 'BALANCE') {
+    //   payTypeText = '余额'
+    // } else if (payType === 'TRANSFER') {
+    //   payTypeText = '转账'
+    // }
     return (
       <div className="od-detail">
         <div className="od-top">
@@ -65,60 +73,67 @@ export default class OrderDetail extends React.Component {
             <div>
               <div className="colo-item">
                 <span className="col-left-item">下单时间：</span>
-                <span>{info.createTime}</span>
+                <span>{info.createTimeStr}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">支付时间：</span>
-                <span>{info.payTime}</span>
+                <span>{payDTO.payTime}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">收货人信息：</span>
-                <span>{info.consignee}</span>
+                <span>{info.addressDTO.consignee}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">收货人手机号：</span>
-                <span>{info.mobile}</span>
+                <span>{info.addressDTO.orderPhone}</span>
               </div>
               <div className="colo-item" style={{ display: 'flex' }}>
                 <span className="col-left-item" style={{ flexShrink: 0 }}>收货人地址：</span>
-                <span>{info.address}</span>
+                <span>{info.addressDTO.orderAddress}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">买家留言：</span>
-                <span>{info.message}</span>
+                <span>{info.userMsg}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">支付商户号：</span>
-                <span>{info.payFlowNumber}</span>
+                <span>{payDTO.payFlowNumber}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">支付类型：</span>
-                <span>{payTypeText}</span>
+                <span>{payDTO.payType}</span>
               </div>
               <div className="colo-item">
                 <span className="col-left-item">支付流水号：</span>
-                <span>{info.payId}</span>
+                <span>{payDTO.payNo}</span>
               </div>
             </div>
           </Card>
 
           <Card title="订单状态" style={{ flex: 1, border: 'none', marginRight: '20px' }}>
-            <span style={{ color: "#f0c3c4", fontSize: 24 }}>{info.orderStatusText}</span>
             {
-              false && <div>
-                <p style={{ color: "#666", fontSize: 24 }}>定金已支付</p>
-                <p style={{ color: "#f0c3c4", fontSize: 24 }}>尾款待支付</p>
-              </div>
+              info.state === 0 && <span style={{ color: "#333", fontSize: 24 }}>待付款</span>
+            }
+            {
+              info.state === 1 && <span style={{ color: "#333", fontSize: 24 }}>已付款(待发货)</span>
+            }
+            {
+              info.state === 2 && <span style={{ color: "#333", fontSize: 24 }}>已发货(待收货)</span>
+            }
+            {
+              info.state === 4 && <span style={{ color: "#578f9a", fontSize: 24 }}>已完成</span>
+            }
+            {
+              info.state === 5 && <span style={{ color: "#f0c3c4", fontSize: 24 }}>已取消</span>
             }
           </Card>
           <Card title="订单金额" style={{ flex: 1, border: 'none', }}>
-            <span style={{ color: "#333", fontSize: 24 }}>￥{info.goodsPrice}</span>
-            {
-              false && <div>
-                <p style={{ color: "#333", fontSize: 24 }}>定金￥300</p>
-                <p style={{ color: "#f0c3c4", fontSize: 24 }}>尾款￥900</p>
-              </div>
-            }
+            <div>
+
+              <p style={{ color: "#333", fontSize: 18 }}>运费￥{childDTO.postage}</p>
+              <p style={{ color: "#333", fontSize: 18 }}>优惠券金额￥{childDTO.couponAmount}</p>
+              <p style={{ color: "#f0c3c4", fontSize: 20 }}>订单总价￥{childDTO.totalAmount}</p>
+            </div>
           </Card>
         </div>
         <div className="od-title">
@@ -126,7 +141,7 @@ export default class OrderDetail extends React.Component {
         </div>
         <div className="order-list">
           {
-            info.orderDetails && info.orderDetails.length > 0 && <OrderList dataSource={info.orderDetails} />
+            childDTO && childDTO.productDTOList.length > 0 && <OrderList dataSource={childDTO.productDTOList} />
           }
         </div>
 
@@ -146,9 +161,11 @@ export default class OrderDetail extends React.Component {
           <span className="od-title-right" onClick={this.showExpress}>查看物流信息</span>
         </div>
 
-        <div style={{ padding: 20, border: '1px solid #ccc' }}>
-          <LogisticsDetails expData={{ expName: info.expName, express: info.express, }} />
-        </div>
+        {
+          childDTO && <div style={{ padding: 20, border: '1px solid #ccc' }}>
+            <LogisticsDetails expData={{ expName: childDTO.shipName, express: childDTO.shipNo, }} />
+          </div>
+        }
 
         <Collapse
           bordered={false}
@@ -172,17 +189,17 @@ const OrderList = (props) => {
   const _columns = [
     {
       title: '商品编号',
-      key: 'goodsNo',
-      dataIndex: 'goodsNo',
+      key: 'productId',
+      dataIndex: 'productId',
     },
     {
       title: '商品信息',
-      key: 'goodsName',
+      key: 'productName',
       render(item) {
         return (
           <>
             <div className="goods-name-item">
-              <img src={item.picUrl} style={{ width: 30, marginRight: 10 }} alt="图片" />{item.goodsName}
+              <img src={item.productCover} style={{ width: 30, marginRight: 10 }} alt="图片" />{item.productName}
             </div>
           </>
         )
@@ -190,30 +207,32 @@ const OrderList = (props) => {
     },
     {
       title: '单价',
-      key: 'price',
-      dataIndex: 'price',
+      key: 'productPrice',
+      dataIndex: 'productPrice',
     },
     {
       title: '购买数量',
-      key: 'number',
-      dataIndex: 'number',
+      key: 'count',
+      dataIndex: 'count',
     },
     {
-      title: '优惠',
-      key: 'comment',
-      dataIndex: 'comment',
+      title: '规格',
+      key: 'minorLabels',
+      render(item) {
+        let minorLabelsStr = item.minorLabels.join(',')
+        return <span>{minorLabelsStr}</span>
+      }
     },
-    {
-      title: '应付金额',
-      key: 'actualPrice',
-      dataIndex: 'actualPrice',
-    }
+    // {
+    //   title: '应付金额',
+    //   key: 'actualPrice',
+    //   dataIndex: 'actualPrice',
+    // }
   ]
   const { dataSource } = props
-  console.log(dataSource)
   return (
     <Table
-      rowKey={record => record.orderDetailId}
+      rowKey={record => record.skuId}
       dataSource={dataSource}
       columns={_columns}
       pagination={false} />
@@ -222,7 +241,7 @@ const OrderList = (props) => {
 
 const LogisticsDetails = (props) => {
   const expData = props.expData
-  console.log(expData)
+  // console.log(expData)
   let nu = expData.express && expData.express.nu && ''
   return (<div>
     <div className="colo-item">
@@ -262,7 +281,7 @@ class ShowExpress extends React.Component {
   render() {
     const { visible } = this.state
     const { express } = this.props
-    console.log(express)
+    // console.log(express)
     return <Modal
       visible={visible}
       title="物流信息"
