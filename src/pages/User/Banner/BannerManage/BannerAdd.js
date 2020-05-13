@@ -18,7 +18,7 @@ class BannerAdd extends React.Component {
       title: '编辑',
       terminalTypeShow: '',
       imgtext: '',
-      isCarouseShow: false,//是否是轮播图广告
+      isCarouseShow: true,//是否是轮播图广告
       contentTypeValue: null,
       houseSateList: [],
       houseSateValue: null,
@@ -29,16 +29,25 @@ class BannerAdd extends React.Component {
 
     let { bannerid, messageText } = this.props
     const that = this
-    this.getAuctionGetHouseSateList(()=> {
-      that.setState({
-        disabled: messageText === "查看详情" ? true : false,
-        bannerid,
-      }, () => {
-        if (bannerid) {
-          that.getConfigDetail(bannerid)
-        }
-      })
+    that.setState({
+      disabled: messageText === "查看详情" ? true : false,
+      bannerid,
+    }, () => {
+      if (bannerid) {
+        that.getConfigDetail(bannerid)
+      }
     })
+
+    // this.getAuctionGetHouseSateList(() => {
+    //   that.setState({
+    //     disabled: messageText === "查看详情" ? true : false,
+    //     bannerid,
+    //   }, () => {
+    //     if (bannerid) {
+    //       that.getConfigDetail(bannerid)
+    //     }
+    //   })
+    // })
   }
   // 获取专场列表
   getAuctionGetHouseSateList = (callback) => {
@@ -60,7 +69,7 @@ class BannerAdd extends React.Component {
           houseSateList: arr
         })
       }
-    }).catch(()=> {
+    }).catch(() => {
       callback && callback()
     })
   }
@@ -101,7 +110,7 @@ class BannerAdd extends React.Component {
         setData.paramContent = data.paramContent
       }
 
-      if (data.type === 'carouse' || data.type === 'mallCarousel') {
+      if (data.type === 'carousel' || data.type === 'mallCarousel') {
         setData.startTime = data.startTime ? moment(data.startTime) : null
         setData.endTime = data.endTime ? moment(data.endTime) : null
       }
@@ -111,7 +120,7 @@ class BannerAdd extends React.Component {
         pic: data.image,
         terminalTypeShow: data.terminalType,
         pushPic: data.pushPic,
-        isCarouseShow: data.type === 'carouse' || data.type === 'mallCarousel',
+        isCarouseShow: data.type === 'carousel' || data.type === 'mallCarousel',
         houseSateValue: data.contentType === 13 ? Number(data.paramContent) : null,
         contentTypeValue: data.contentType,
       }, () => {
@@ -184,7 +193,7 @@ class BannerAdd extends React.Component {
       case 'mallAdvert':
         text = '商城广告（685*140）'
         break;
-      case 'carouse':
+      case 'carousel':
         text = '首页轮播图（680*406）'
         bool = true
         break;
@@ -213,7 +222,7 @@ class BannerAdd extends React.Component {
       wrapperCol: { span: 20 },
     };
 
-    const { pic, disabled, terminalTypeShow, imgtext, isCarouseShow, contentTypeValue, houseSateList,houseSateValue } = this.state
+    const { pic, disabled, terminalTypeShow, imgtext, isCarouseShow, contentTypeValue, houseSateList, houseSateValue } = this.state
     const { getFieldDecorator } = this.props.form;
     return (
       <div className="ba-box">
@@ -226,15 +235,15 @@ class BannerAdd extends React.Component {
           </Form.Item>
 
           <Form.Item label="广告位置">
-            {getFieldDecorator('type', { valuePropName: 'value', rules: [{ required: true, message: '请选择广告位置' }] })(
+            {getFieldDecorator('type', { valuePropName: 'value', initialValue: 'carousel', rules: [{ required: true, message: '请选择广告位置' }] })(
               <Select placeholder='请选择广告位置' style={{ width: 400 }} onChange={this.slectTypeChange}>
                 {getOptionsList([
-                  { id: 'advert', value: 'advert', label: '首页广告（685*140）' },
-                  { id: 'mallAdvert', value: 'mallAdvert', label: '商城广告（685*140）' },
-                  { id: 'carouse', value: 'carouse', label: '首页轮播图（680*406）' },
-                  { id: 'mallCarousel', value: 'mallCarousel', label: '商城轮播图（680*406）' },
-                  { id: 'openImage', value: 'openImage', label: '启动图（1920*1080）' },
-                  { id: 'popupImage', value: 'popupImage', label: '弹窗广告图（564*890）' },
+                  { id: 'carousel', value: 'carousel', label: '首页轮播图（690*406）' },
+                  // { id: 'advert', value: 'advert', label: '首页广告（685*140）' },
+                  // { id: 'mallAdvert', value: 'mallAdvert', label: '商城广告（685*140）' },
+                  // { id: 'mallCarousel', value: 'mallCarousel', label: '商城轮播图（680*406）' },
+                  // { id: 'openImage', value: 'openImage', label: '启动图（1920*1080）' },
+                  // { id: 'popupImage', value: 'popupImage', label: '弹窗广告图（564*890）' },
                 ])}
               </Select>
             )}
@@ -267,8 +276,6 @@ class BannerAdd extends React.Component {
               </Form.Item>
             </>
           }
-
-
           <Form.Item label="权重">
             {getFieldDecorator('sort', { valuePropName: 'value', initialValue: 1, rules: [{ required: true, message: "请输入广告名称" }] })(
               <InputNumber style={{ width: 120 }} min={0} />
@@ -311,7 +318,7 @@ class BannerAdd extends React.Component {
                   <Input style={{ width: 400 }} disabled={disabled} />
                 )}
               </Form.Item>
-              <Form.Item label="APPID">
+              <Form.Item label="参数">
                 {getFieldDecorator('paramContent', { valuePropName: 'value' })(
                   <Input style={{ width: 400 }} disabled={disabled} />
                 )}
@@ -331,12 +338,12 @@ class BannerAdd extends React.Component {
             terminalTypeShow === 'program' && <>
               <Form.Item label="小程序链接">
                 {getFieldDecorator('accessUrl', { valuePropName: 'value' })(
-                  <Input style={{ width: 400 }} disabled={disabled} />
+                  <Input style={{ width: 400 }} disabled={disabled} placeholder="请输入小程序连接" />
                 )}
               </Form.Item>
-              <Form.Item label="APPID">
+              <Form.Item label="参数">
                 {getFieldDecorator('paramContent', { valuePropName: 'value' })(
-                  <Input style={{ width: 400 }} disabled={disabled} />
+                  <Input style={{ width: 400 }} disabled={disabled} placeholder="请输入APPID" />
                 )}
               </Form.Item>
             </>

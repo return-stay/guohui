@@ -4,7 +4,7 @@ import { Table, Input, Button, Form, Divider, message, Modal } from 'antd';
 
 import AddSort from './AddSort'
 import request from '../../../../utils/request'
-import { CategoryFindAllCate, CateUpdateCate } from '../../../../config/api'
+import { CategoryFindAllCate, CateUpdateCate, CateUpDownCate } from '../../../../config/api'
 // import './index.less'
 
 const EditableContext = React.createContext();
@@ -122,18 +122,18 @@ class SortManage extends React.Component {
 
         }
       },
-      // {
-      //   title: '黑白图片',
-      //   dataIndex: 'ordinaryPicUrl',
-      //   key: 'ordinaryPicUrl',
-      //   render(ordinaryPicUrl) {
-      //     return <img src={ordinaryPicUrl} style={{ height: 30 }} alt="图片" />
-      //   }
-      // },
       {
         title: '排序',
         dataIndex: 'sort',
         key: 'sort',
+      },
+      {
+        title: '状态',
+        dataIndex: 'state',
+        key: 'state',
+        render(state) {
+          return <span>{state === 0 ? '已上线' : '已下线'}</span>
+        }
       },
       {
         title: '操作',
@@ -150,6 +150,13 @@ class SortManage extends React.Component {
                 </>
               }
               <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={(e) => { this.edit(item) }}>编辑</span>
+              <Divider type="vertical" />
+              {
+                item.state === 0 ?
+                  <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={(e) => { this.upDownCate(item, 'down') }}>下线</span>
+                  :
+                  <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={(e) => { this.upDownCate(item, 'up') }}>上线</span>
+              }
               <Divider type="vertical" />
               <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => { this.handleDelete(item) }}>删除</span>
             </div>
@@ -247,6 +254,32 @@ class SortManage extends React.Component {
     let keys = [selectedRowKeys[selectedRowKeys.length - 1]]
     let rows = [selectedRows[selectedRows.length - 1]]
     this.setState({ selectedRowKeys: keys, selectedRows: rows });
+  }
+
+  // 上下线
+  upDownCate = (item, type) => {
+    const that = this
+    let contentText = type === 'up' ? '确定上线改类目吗？' : '确定下线该类目吗？'
+    Modal.confirm({
+      title: '提示',
+      content: contentText,
+      onOk() {
+        request({
+          url: CateUpDownCate,
+          params: {
+            cateId: item.id,
+            type: type === 'up' ? 0 : 1,
+            token: localStorage.getItem('authed')
+          }
+        }).then(res => {
+          if (res.code === 100) {
+            let successText = type === 'up' ? '上线' : '下线'
+            message.success(successText + '成功')
+            that.getList()
+          }
+        })
+      }
+    })
   }
 
   edit = item => {

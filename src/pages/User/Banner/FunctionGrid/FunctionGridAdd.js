@@ -1,12 +1,12 @@
 import React from 'react'
-import { Form, Input, Radio, Button, Select, InputNumber } from "antd";
+import { Form, Input, Radio, Button, Select, InputNumber, DatePicker } from "antd";
 import connect from '../../../../utils/connect'
 import request from "../../../../utils/request";
 import Gupload from '../../../../common/Gupload'
-import { ConfigDetail, ConfigAdd, ConfigUpdate,AuctionGetHouseSateList } from '../../../../config/api'
+import { ConfigDetail, ConfigAdd, ConfigUpdate, AuctionGetHouseSateList } from '../../../../config/api'
 import { getOptionsList } from '../../../../utils'
 import '../index.less'
-
+import moment from 'moment'
 @connect
 class FunctionGridAdd extends React.Component {
   constructor() {
@@ -18,22 +18,31 @@ class FunctionGridAdd extends React.Component {
       contentTypeValue: null,
       houseSateList: [],
       houseSateValue: null,
+      isCarouseShow: true,
     }
   }
   componentDidMount() {
     this.props.triggerRef && this.props.triggerRef(this)
 
     let { bannerid, messageText } = this.props
-    this.getAuctionGetHouseSateList(()=> {
-      this.setState({
-        disabled: messageText === "查看详情" ? true : false,
-        bannerid,
-      }, () => {
-        if (bannerid) {
-          this.getConfigDetail(bannerid)
-        }
-      })
+    this.setState({
+      disabled: messageText === "查看详情" ? true : false,
+      bannerid,
+    }, () => {
+      if (bannerid) {
+        this.getConfigDetail(bannerid)
+      }
     })
+    // this.getAuctionGetHouseSateList(() => {
+    //   this.setState({
+    //     disabled: messageText === "查看详情" ? true : false,
+    //     bannerid,
+    //   }, () => {
+    //     if (bannerid) {
+    //       this.getConfigDetail(bannerid)
+    //     }
+    //   })
+    // })
   }
   // 获取专场列表
   getAuctionGetHouseSateList = (callback) => {
@@ -55,7 +64,7 @@ class FunctionGridAdd extends React.Component {
           houseSateList: arr
         })
       }
-    }).catch(()=> {
+    }).catch(() => {
       callback && callback()
     })
   }
@@ -87,6 +96,7 @@ class FunctionGridAdd extends React.Component {
         terminalType: terminalType,
         accessUrl: data.accessUrl,
         sort: data.sort,
+        status: data.status,
       }
       if (data.contentType) {
         setData.contentType = data.contentType
@@ -94,6 +104,9 @@ class FunctionGridAdd extends React.Component {
       if (data.paramContent) {
         setData.paramContent = data.paramContent
       }
+
+      setData.startTime = data.startTime ? moment(data.startTime) : null
+      setData.endTime = data.endTime ? moment(data.endTime) : null
       this.setState({
         gridInfo: data,
         pic: data.image,
@@ -119,6 +132,9 @@ class FunctionGridAdd extends React.Component {
           url = ConfigUpdate
           values.id = bannerid
         }
+
+        values.startTime = moment(values.startTime).format('YYYY-MM-DD HH:mm:ss')
+        values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')
         values.name = values.title
         request({
           url: url,
@@ -189,7 +205,7 @@ class FunctionGridAdd extends React.Component {
       wrapperCol: { span: 20 },
     };
 
-    const { pic, terminalTypeShow, disabled,contentTypeValue ,houseSateList,houseSateValue} = this.state
+    const { pic, terminalTypeShow, disabled, contentTypeValue, houseSateList, houseSateValue, isCarouseShow } = this.state
     const { getFieldDecorator } = this.props.form;
     return (
       <div className="ba-box">
@@ -201,20 +217,44 @@ class FunctionGridAdd extends React.Component {
             )}
           </Form.Item>
           <Form.Item label="选择位置">
-            {getFieldDecorator('type', { valuePropName: 'value', rules: [{ required: true, message: "请选择位置" }] })(
+            {getFieldDecorator('type', { valuePropName: 'value', initialValue: 'diamond', rules: [{ required: true, message: "请选择位置" }] })(
               <Select placeholder='请选择所在位置' style={{ width: 400 }}>
                 {getOptionsList([
                   { id: 'diamond', value: 'diamond', label: '首页金刚区（48*48）' },
-                  { id: 'mallDiamond', value: 'mallDiamond', label: '商城金刚区（48*48）' },
+                  // { id: 'mallDiamond', value: 'mallDiamond', label: '商城金刚区（48*48）' },
                 ])}
               </Select>
             )}
           </Form.Item>
           <Form.Item label="金刚区图片">
             {getFieldDecorator('pic', { valuePropName: 'value', rules: [{ required: true, message: "请上传金刚区图片" }] })(
-              <Gupload file={pic} uploadButtonText="上传图片（48*48）" success={img => this.uploadSuccessCallback(img, 'productPicUrl')} />
+              <Gupload file={pic} uploadButtonText="上传图片（120*120）" success={img => this.uploadSuccessCallback(img, 'productPicUrl')} />
             )}
           </Form.Item>
+
+          <Form.Item label="广告状态">
+            {getFieldDecorator('status', { valuePropName: 'value', rules: [{ required: true, message: "请输入广告名称" }] })(
+              <Radio.Group>
+                <Radio value={0}>开启</Radio>
+                <Radio value={1}>关闭</Radio>
+              </Radio.Group>
+            )}
+          </Form.Item>
+
+          {
+            isCarouseShow && <>
+              <Form.Item label="开始时间">
+                {getFieldDecorator('startTime', { valuePropName: 'value', rules: [{ required: true, message: "请选择开始时间" }] })(
+                  <DatePicker showTime={true} placeholder='开始时间' format="YYYY-MM-DD HH:mm:ss" />
+                )}
+              </Form.Item>
+              <Form.Item label="结束时间">
+                {getFieldDecorator('endTime', { valuePropName: 'value', rules: [{ required: true, message: "请选择结束时间" }] })(
+                  <DatePicker showTime={true} placeholder='结束时间' format="YYYY-MM-DD HH:mm:ss" />
+                )}
+              </Form.Item>
+            </>
+          }
           <Form.Item label="权重">
             {getFieldDecorator('sort', { valuePropName: 'value', initialValue: 1, rules: [{ required: true, message: "请输入广告名称" }] })(
               <InputNumber style={{ width: 120 }} min={0} />

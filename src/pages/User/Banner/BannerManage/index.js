@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, message, Divider, Tabs, Radio, } from 'antd'
+import { Modal, message, Divider, Tabs } from 'antd'
 import GtableEdit from '../../../../common/GtableEdit'
 import request from '../../../../utils/request'
 import BannerAdd from './BannerAdd'
@@ -12,7 +12,7 @@ class BannerManage extends React.Component {
     tabKey: '1',
     tabValue: '新增广告',
     typeValue: 1,
-    bannerType: 'advert',
+    bannerType: 'carousel',
     urls: {
       list: '/config/search',
       listMethod: 'post',
@@ -68,27 +68,41 @@ class BannerManage extends React.Component {
       tabKey: '1',
       tabValue: '新增广告'
     })
+
+    this.tableChild.sortingParameters();
   }
 
   closed = (item, type) => {
+    const that = this
     let url = ''
     let actionType = 0
+    let contentText = '确定开启吗？'
     if (type === 'close') {
       url = ConfigDelete
       actionType = 1
+      contentText = '确定关闭吗？'
     }
     url = ConfigDelete
-    request({
-      url: url,
-      method: 'post',
-      params: { md5Str: localStorage.getItem('authed') },
-      data: {
-        id: item.id,
-        type: actionType,
-        userId: 0,
+    Modal.confirm({
+      title: '提示',
+      content: contentText,
+      onOk() {
+        request({
+          url: url,
+          method: 'post',
+          params: { md5Str: localStorage.getItem('authed') },
+          data: {
+            id: item.id,
+            type: actionType,
+            userId: 0,
+          }
+        }).then(res => {
+          if (res.code === 100) {
+            message.success(type === 'close' ? '关闭成功' : '开启成功')
+            that.tableChild.sortingParameters();
+          }
+        })
       }
-    }).then(res => {
-      this.tableChild.sortingParameters();
     })
   }
 
@@ -96,7 +110,7 @@ class BannerManage extends React.Component {
     let value = e.target.value
 
     let bannerType = ''
-
+    // 轮播=carousel,金刚区=diamond,卡片区=card,广告位=advert
     switch (value) {
       case 1:
         bannerType = 'advert'
@@ -158,7 +172,7 @@ class BannerManage extends React.Component {
           key: 'pic',
           dataIndex: 'pic',
           render(pic) {
-            return <Gimage src={pic} alt="图片" style={{ width: '100%' }} />
+            return <Gimage src={pic} alt="图片" style={{ height: 30 }} />
           }
         },
         {
@@ -240,7 +254,7 @@ class BannerManage extends React.Component {
         <div>
           <Tabs activeKey={tabKey} onChange={this.tabChange}>
             <TabPane tab="广告列表" key="1">
-              <Radio.Group onChange={this.onRadioChange} value={typeValue} style={{ marginBottom: 20, marginLeft: 30 }}>
+              {/* <Radio.Group onChange={this.onRadioChange} value={typeValue} style={{ marginBottom: 20, marginLeft: 30 }}>
                 <Radio value={1}>首页广告</Radio>
                 <Radio value={2}>商城广告</Radio>
 
@@ -249,7 +263,7 @@ class BannerManage extends React.Component {
 
                 <Radio value={5}>启动图</Radio>
                 <Radio value={6}>弹窗广告</Radio>
-              </Radio.Group>
+              </Radio.Group> */}
 
               <GtableEdit
                 urls={urls}

@@ -4,7 +4,7 @@ import GtableEdit from '../../../../common/GtableEdit'
 import request from '../../../../utils/request'
 import FunctionGridAddFrom from './FunctionGridAdd'
 import { ConfigDelete } from '../../../../config/api'
-
+import Gimage from '../../../../common/Gimage'
 const { TabPane } = Tabs
 class FunctionGrid extends React.Component {
   state = {
@@ -52,26 +52,40 @@ class FunctionGrid extends React.Component {
       tabValue: '编辑金刚区',
       bannerid: item.id
     })
+    this.tableChild.sortingParameters();
   }
   closed = (item, type) => {
+    const that = this
     let url = ''
     let actionType = 0
+    let contentText = '确定开启吗？'
     if (type === 'close') {
       url = ConfigDelete
       actionType = 1
+      contentText = '确定关闭吗？'
     }
     url = ConfigDelete
-    request({
-      url: url,
-      method: 'post',
-      params: { md5Str: localStorage.getItem('authed') },
-      data: {
-        id: item.id,
-        type: actionType,
-        userId: 0,
+
+    Modal.confirm({
+      title: '提示',
+      content: contentText,
+      onOk() {
+        request({
+          url: url,
+          method: 'post',
+          params: { md5Str: localStorage.getItem('authed') },
+          data: {
+            id: item.id,
+            type: actionType,
+            userId: 0,
+          }
+        }).then(res => {
+          if (res.code === 100) {
+            message.success(type === 'close' ? '关闭成功' : '开启成功')
+            that.tableChild.sortingParameters();
+          }
+        })
       }
-    }).then(res => {
-      this.tableChild.sortingParameters();
     })
   }
 
@@ -88,6 +102,7 @@ class FunctionGrid extends React.Component {
       tabKey: '1',
       tabValue: '新增金刚区'
     })
+    this.tableChild.sortingParameters();
   }
 
   onRadioChange = (e) => {
@@ -115,7 +130,7 @@ class FunctionGrid extends React.Component {
           key: 'pic',
           dataIndex: 'pic',
           render(pic) {
-            return <img src={pic} alt="图片" style={{ width: 30 }} />
+            return <Gimage src={pic} alt="图片" style={{ height: 30 }} />
           }
         },
         {
@@ -137,6 +152,7 @@ class FunctionGrid extends React.Component {
           title: '申请时间',
           key: 'createTime',
           dataIndex: 'createTime',
+          width: 200,
         },
         {
           title: '权重',
@@ -151,6 +167,7 @@ class FunctionGrid extends React.Component {
         {
           title: '操作',
           key: 'action',
+          width: 150,
           render: (item) => {
             return (
               <>
@@ -186,10 +203,10 @@ class FunctionGrid extends React.Component {
         <div>
           <Tabs activeKey={tabKey} onChange={this.tabChange}>
             <TabPane tab="金刚区列表" key="1">
-              <Radio.Group onChange={this.onRadioChange} value={typeValue} style={{ marginBottom: 20, marginLeft: 30 }}>
+              {/* <Radio.Group onChange={this.onRadioChange} value={typeValue} style={{ marginBottom: 20, marginLeft: 30 }}>
                 <Radio value={1}>首页金刚区</Radio>
                 <Radio value={2}>商城金刚区</Radio>
-              </Radio.Group>
+              </Radio.Group> */}
 
               <GtableEdit
                 urls={urls}

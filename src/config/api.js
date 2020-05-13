@@ -16,6 +16,7 @@ const QueryByOwenerIdAndOwnerType = '/api/productCategory/listByParentId'; //获
 const CategoryFindAllCate = '/cate/queryCate' //商品类目GET /category/findAllCate
 const CateAddCate = '/cate/addCate' //商品类目添加
 const CateUpdateCate = '/cate/updateCate' //删除类目
+const CateUpDownCate= '/cate/upDownCate' //类目上下线
 
 const CategoryFindAllCateId = '/cate/queryCate' //商品类目
 
@@ -95,6 +96,7 @@ export {
   CategoryFindAllCate,
   CateAddCate,
   CateUpdateCate,
+  CateUpDownCate,
   CategoryFindAllCateId,
   CategoryQueryProductTypeAttributes,
   CategoryQueryProductIdAttributes,

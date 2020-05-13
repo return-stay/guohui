@@ -4,6 +4,7 @@ import { Card, Icon, Table, Collapse, Modal, Steps, message } from 'antd'
 import { dismantleSearch } from '../../../../utils'
 import { OrderDetailApi } from '../../../../config/api'
 import request from '../../../../utils/request'
+import Gimage from '../../../../common/Gimage'
 import './index.less'
 const { Panel } = Collapse;
 const { Step } = Steps;
@@ -52,7 +53,7 @@ export default class OrderDetail extends React.Component {
   }
 
   render() {
-    const { info, childDTO,payDTO } = this.state
+    const { info, childDTO, payDTO } = this.state
     // let payTypeText = ''
     // let payType = payDTO.payType
     // if (payType === 'WX-JSAPI') {
@@ -199,7 +200,7 @@ const OrderList = (props) => {
         return (
           <>
             <div className="goods-name-item">
-              <img src={item.productCover} style={{ width: 30, marginRight: 10 }} alt="图片" />{item.productName}
+              <Gimage src={item.productCover} style={{ width: 30, marginRight: 10 }} alt="图片" />{item.productName}
             </div>
           </>
         )
