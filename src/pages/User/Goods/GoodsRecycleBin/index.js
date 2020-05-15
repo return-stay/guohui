@@ -1,6 +1,6 @@
 import React from 'react'
 import { Divider, Modal, message } from 'antd'
-import {withRouter} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import GtableEdit from '../../../../common/GtableEdit'
 import request from '../../../../utils/request'
 import Gimage from '../../../../common/Gimage'
@@ -110,17 +110,49 @@ class GoodsRecycleBin extends React.Component {
         {
           title: '类目',
           key: 'categoryOneName',
-          dataIndex: 'categoryOneName',
-          width: 100,
-          render(categoryOneName) {
-            return <span>{categoryOneName}</span>
+          width: 160,
+          render(item) {
+            return <span>{item.categoryOneName}/{item.categoryTwoName}</span>
           }
         },
         {
-          title: '库存',
-          key: 'pstock',
+          title: '所属商铺',
+          key: 'shopName',
+          width: 160,
+          render(item) {
+            let shopName = item.shopDTO && item.shopDTO.shopName
+            return <span>{shopName}</span>
+          }
+        },
+        {
+          title: '现价',
+          key: 'salePrice',
+          dataIndex: 'salePrice',
           width: 100,
-          dataIndex: 'pstock',
+        },
+        {
+          title: '原价',
+          key: 'originalPrice',
+          dataIndex: 'originalPrice',
+          width: 100,
+        },
+        // {
+        //     title: '企业会员价',
+        //     key: 'comMemberPrice',
+        //     dataIndex: 'comMemberPrice',
+        //     width: 100,
+        // },
+        {
+          title: '库存',
+          key: 'productStock',
+          dataIndex: 'productStock',
+          width: 100,
+        },
+        {
+          title: '销量',
+          key: 'saleVolume',
+          dataIndex: 'saleVolume',
+          width: 100,
         },
         {
           title: '商品单位',
@@ -140,10 +172,10 @@ class GoodsRecycleBin extends React.Component {
                 str = '待上架'
                 break;
               case 1:
-                str = '以上架'
+                str = '已上架'
                 break;
               case 2:
-                str = '以下架'
+                str = '已下架'
                 break;
               default:
                 str = '删除'
@@ -162,7 +194,7 @@ class GoodsRecycleBin extends React.Component {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 300,
+          width: 160,
           render: (item) => {
             const spanStyle = { color: '#1890ff', cursor: 'pointer' }
             return (
@@ -177,9 +209,9 @@ class GoodsRecycleBin extends React.Component {
       ]
     }
     return (
-      <div>
+      <div className="user-box">
         <GtableEdit
-          rowKey={record => record.productSpecId}
+          rowKey={record => record.productId}
           triggerRef={ref => { this.tableChild = ref }}
           isRowSelection={false}
           urls={urls}

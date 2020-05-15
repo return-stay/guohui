@@ -362,7 +362,7 @@ class SortManage extends React.Component {
       onChange: this.onSelectChange,
     };
     return (
-      <div>
+      <div className="user-box">
         <Button icon="plus" onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
           新增
         </Button>

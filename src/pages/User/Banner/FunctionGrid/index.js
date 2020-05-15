@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, message, Divider, Tabs, Radio } from 'antd'
+import { Modal, message, Divider, Tabs } from 'antd'
 import GtableEdit from '../../../../common/GtableEdit'
 import request from '../../../../utils/request'
 import FunctionGridAddFrom from './FunctionGridAdd'
@@ -149,7 +149,7 @@ class FunctionGrid extends React.Component {
           }
         },
         {
-          title: '申请时间',
+          title: '创建时间',
           key: 'createTime',
           dataIndex: 'createTime',
           width: 200,
@@ -199,7 +199,7 @@ class FunctionGrid extends React.Component {
       { type: 'chooseTime', field: 'createTime', label: '创建时间', beginTime: 'startTime', EndTime: 'endTime' },
     ]
     return (
-      <div className="om-box">
+      <div className="om-box user-box">
         <div>
           <Tabs activeKey={tabKey} onChange={this.tabChange}>
             <TabPane tab="金刚区列表" key="1">

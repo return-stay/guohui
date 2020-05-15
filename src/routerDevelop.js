@@ -1,6 +1,5 @@
-
-
-import AsyncComponent from './utils/asyncComponent'
+import Index from './pages/User/Home/ConsolePage'
+// import AsyncComponent from './utils/asyncComponent'
 import goodsRouter from './router/goodsRouter'
 import dealsRouter from './router/dealsRouter'
 
@@ -22,7 +21,6 @@ import marketingRouter from './router/marketingRouter'
 import bannerRouter from './router/bannerRouter'
 import longhairRouter from './router/longhairRouter'
 // import Index from './pages/User/Home'
-const Index = () => AsyncComponent(()=> import('./pages/User/Home'))
 const routerDevelop = [
   {
     path: '/user/home',
@@ -30,35 +28,6 @@ const routerDevelop = [
     component: Index,
     name: '首页',
     icon: 'home',
-    children: [
-      {
-        path: '/user/home/control',
-        pathName: 'home-control',
-        // component: GoodsList,
-        icon: 'control',
-        name: '控制台',
-        children: [
-          {
-            path: '/user/control/sale',
-            pathName: 'control-sale',
-            // component: GoodsList,
-            name: '今日销售额',
-          },
-          {
-            path: '/user/control/new-member',
-            pathName: 'control-new-member',
-            // component: GoodsList,
-            name: '今日新增会员',
-          },
-          {
-            path: '/user/index/new-store',
-            pathName: 'index-new-store',
-            // component: GoodsList,
-            name: '今日新增店铺',
-          },
-        ]
-      },
-    ]
   },
   
   ...shopsRouter,

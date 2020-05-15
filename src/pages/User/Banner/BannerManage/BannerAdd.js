@@ -234,9 +234,9 @@ class BannerAdd extends React.Component {
             )}
           </Form.Item>
 
-          <Form.Item label="广告位置">
+          <Form.Item label="广告类型">
             {getFieldDecorator('type', { valuePropName: 'value', initialValue: 'carousel', rules: [{ required: true, message: '请选择广告位置' }] })(
-              <Select placeholder='请选择广告位置' style={{ width: 400 }} onChange={this.slectTypeChange}>
+              <Select placeholder='请选择广告类型' style={{ width: 400 }} onChange={this.slectTypeChange}>
                 {getOptionsList([
                   { id: 'carousel', value: 'carousel', label: '首页轮播图（690*406）' },
                   // { id: 'advert', value: 'advert', label: '首页广告（685*140）' },
@@ -298,8 +298,6 @@ class BannerAdd extends React.Component {
                 {getFieldDecorator('contentType', { valuePropName: 'value', rules: [{ required: true, message: "请输入跳转类型" }] })(
                   <Radio.Group disabled={disabled} onChange={this.contentTypeChange}>
                     <Radio value={11}>商品</Radio>
-                    <Radio value={12}>拍品</Radio>
-                    <Radio value={13}>专场</Radio>
                     <Radio value={10}>分类</Radio>
                   </Radio.Group>
                 )}

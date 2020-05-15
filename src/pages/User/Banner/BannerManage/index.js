@@ -250,7 +250,7 @@ class BannerManage extends React.Component {
       { type: 'chooseTime', field: 'createTime', label: '创建时间', beginTime: 'startTime', EndTime: 'endTime' },
     ]
     return (
-      <div className="om-box">
+      <div className="om-box user-box">
         <div>
           <Tabs activeKey={tabKey} onChange={this.tabChange}>
             <TabPane tab="广告列表" key="1">

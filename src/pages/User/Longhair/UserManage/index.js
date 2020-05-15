@@ -6,11 +6,11 @@ import GtableEdit from '../../../../common/GtableEdit'
 import Gimage from '../../../../common/Gimage'
 import UserDetail from './UserDetail'
 import request from "../../../../utils/request";
-// import {
-//   UserRecommendUser,
-//   UserRecommendUserCancel,
-//   UserSetUserLabel,
-// } from '../../../../config/api'
+import {
+  // UserRecommendUser,
+  // UserRecommendUserCancel,
+  UserSetUserLabel,
+} from '../../../../config/api'
 class UserManage extends React.Component {
   state = {
     isDetail: false,
@@ -81,7 +81,7 @@ class UserManage extends React.Component {
     // } else {
     //   message.warning('至少选择一个用户')
     // }
-    this.addChild.show(item.id)
+    this.addChild.show(item.userId)
   }
 
   render() {
@@ -93,12 +93,6 @@ class UserManage extends React.Component {
           dataIndex: 'userId',
           align: 'center',
           width: 80,
-        },
-        {
-          title: '用户名称',
-          dataIndex: 'userName',
-          key: 'userName',
-          width: 130,
         },
         {
           title: '头像/昵称',
@@ -131,6 +125,13 @@ class UserManage extends React.Component {
           width: 140,
         },
         {
+          title: '用户来源',
+          key: 'source',
+          dataIndex: 'source',
+          align: 'center',
+          width: 140,
+        },
+        {
           title: '注册渠道',
           key: 'channel',
           dataIndex: 'channel',
@@ -138,29 +139,46 @@ class UserManage extends React.Component {
           width: 140,
         },
         {
-          title: '微信唯一码',
-          key: 'uniqueCode',
-          dataIndex: 'uniqueCode',
+          title: '会员等级（默认普通会员）',
+          key: 'levelId',
+          dataIndex: 'levelId',
+          align: 'center',
+          width: 140,
+          render(levelId) {
+            let levelText = ''
+            switch (levelId) {
+              case 1:
+                levelText = '普通会员'
+                break;
+              default:
+                levelText = ''
+            }
+            return <span>{levelText}</span>
+          }
+        },
+        {
+          title: '积分',
+          key: 'score',
+          dataIndex: 'score',
           align: 'center',
           width: 140,
         },
         {
-          title: '分享唯一码 ',
-          key: 'shareCode',
-          dataIndex: 'shareCode',
-          align: 'center',
-          width: 140,
-        },
-
-        {
-          title: '所属公司',
-          key: 'companyName',
-          dataIndex: 'companyName',
+          title: '用户标签',
+          key: 'tag',
+          dataIndex: 'tag',
           align: 'center',
           width: 140,
         },
         {
-          title: '是否有效',
+          title: '注册时间',
+          key: 'createTimeStr',
+          dataIndex: 'createTimeStr',
+          align: 'center',
+          width: 140,
+        },
+        {
+          title: '状态',
           key: 'available',
           dataIndex: 'available',
           align: 'center',
@@ -170,40 +188,31 @@ class UserManage extends React.Component {
           }
         },
         {
-          title: '创建时间',
-          key: 'createTimeStr',
-          dataIndex: 'createTimeStr',
+          title: '操作',
+          key: 'action',
+          fixed: 'right',
           align: 'center',
-          width: 200,
-        },
-        // {
-        //   title: '操作',
-        //   key: 'action',
-        //   fixed: 'right',
-        //   align: 'center',
-        //   width: 200,
-        //   render: (item) => {
-        //     const spanStyle = { color: '#1890ff', cursor: 'pointer' }
-        //     return (
-        //       <>
-        //         {
-        //           item.recommend === 0 ?
-        //             <span style={spanStyle} onClick={() => this.recommendHandle(item, 1)}>推荐</span> :
-        //             <span style={spanStyle} onClick={() => this.recommendHandle(item, 0)}>取消推荐</span>
-
-        //         }
-        //         <Divider type="vertical" />
-        //         <span style={spanStyle} onClick={() => this.setLable(item)}>设置标签</span>
-        //       </>
-        //     )
-        //   }
-        // }
+          width: 100,
+          render: (item) => {
+            const spanStyle = { color: '#1890ff', cursor: 'pointer' }
+            return (
+              <>
+                {/* {
+                  item.recommend === 0 ?
+                    <span style={spanStyle} onClick={() => this.recommendHandle(item, 1)}>推荐</span> :
+                    <span style={spanStyle} onClick={() => this.recommendHandle(item, 0)}>取消推荐</span>
+                }
+                <Divider type="vertical" /> */}
+                <span style={spanStyle} onClick={() => this.setLable(item)}>设置标签</span>
+              </>
+            )
+          }
+        }
       ]
     }
 
     const { urls, artistid, isDetail } = this.state
     const searchData = [
-      { type: 'input', field: 'userName', width: '170px', label: '用户名称' },
       { type: 'input', field: 'nickName', width: '170px', label: '用户昵称' },
       { type: 'chooseTime', field: 'time', label: '注册时间', beginTime: 'startTime', EndTime: 'endTime' },
       {
@@ -212,10 +221,22 @@ class UserManage extends React.Component {
           { id: 1, value: 1, label: '禁用' }
         ]
       },
-      { type: 'input', field: 'channel', width: '170px', label: '注册渠道', placeholder: '请输入用户注册渠道' },
+      { type: 'input', field: 'tag', width: '170px', label: '用户标签', placeholder: '请输入用户标签' },
+      {
+        type: 'select', field: 'source', width: '170px', label: '用户来源', placeholder: '请选择用户来源', list: [
+          { id: 0, value: 'WeChat', label: '微信' },
+          { id: 1, value: 'WeChat', label: '手机' }
+        ]
+      },
+      {
+        type: 'select', field: 'channel', width: '170px', label: '注册渠道', placeholder: '请选择用户注册渠道', list: [
+          { id: 0, value: '517', label: '517活动' },
+          { id: 1, value: '365', label: '365活动' }
+        ]
+      },
     ]
     return (
-      <div className="om-box user-bg">
+      <div className="om-box user-bg user-box">
         {/* <div style={{ marginBottom: 10 }}><Button onClick={this.setLable}>批量设置标签</Button></div> */}
         <GtableEdit
           urls={urls}
@@ -230,7 +251,7 @@ class UserManage extends React.Component {
           triggerRef={ref => { this.tableChild = ref }}
         />
 
-        <UserAddFrom triggerRef={ref => { this.addChild = ref }} userid={0} successCallback={this.successCallback} />
+        <UserAddFrom triggerRef={ref => { this.addChild = ref }} successCallback={this.successCallback} />
         {
           isDetail && <UserDetail artistid={artistid} goback={this.goback} />
         }
@@ -260,6 +281,7 @@ class UserAdd extends React.Component {
   }
 
   show = (ids) => {
+    console.log(ids)
     this.setState({
       visible: true,
       ids,
@@ -267,25 +289,27 @@ class UserAdd extends React.Component {
   }
 
   onOk = (e) => {
-    // const that = this
+    const that = this
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log(values)
-        // let ids = that.state.ids
-        // request({
-        //   url: UserSetUserLabel,
-        //   method: 'get',
-        //   params: {
-        //     md5Str: localStorage.getItem('authed'),
-        //     userid: ids,
-        //     ...values
-        //   },
-        // }).then(res => {
-        //   console.log(res)
-        //   that.onCancel()
-        //   that.props.successCallback && that.props.successCallback()
-        // })
+        let ids = that.state.ids
+        request({
+          url: UserSetUserLabel,
+          method: 'post',
+          params: {
+            md5Str: localStorage.getItem('authed'),
+          },
+          data: {
+            userId: ids,
+            ...values
+          }
+        }).then(res => {
+          console.log(res)
+          that.onCancel()
+          that.props.successCallback && that.props.successCallback()
+        })
       }
     })
   }
@@ -315,7 +339,7 @@ class UserAdd extends React.Component {
       <Form {...formLayout}>
 
         <Form.Item label="标签名称">
-          {getFieldDecorator('userLabel', { valuePropName: 'value', rules: [{ required: true, message: '请输入用户标签' }] })(<Input style={{ width: '100%' }} placeholder='请输入用户标签' />)}
+          {getFieldDecorator('tag', { valuePropName: 'value', rules: [{ required: true, message: '请输入用户标签' }] })(<Input style={{ width: '100%' }} placeholder='请输入用户标签' />)}
         </Form.Item>
       </Form>
 

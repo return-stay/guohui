@@ -26,6 +26,12 @@ const CategoryQueryProductTypeAttributes =  '/category/queryProductTypeAttribute
 const CategoryQueryProductIdAttributes = '/category/queryProductIdAttributes' //根据id 查询数据
 
 
+// 控制台数据
+const ConsoleDeskQueryCalDataCenter = '/data/center'
+const ConsoleDeskQueryCalDataOrder = '/data/mouthOrder' //控制台订单数据
+const DataHotUser = '/data/hotUser' //热门用户
+const DataHotProduct = '/data/hotProduct' //热门商品
+const ConsoleDeskQueryOrderMap = '/data/regionOrder'
 // 商品管理相关接口
 const ProductAdd = '/product/v1/add' //商品添加
 const ProductList = 'product/search'
@@ -85,6 +91,9 @@ const RecommendDelete = '/recommend/delete' //删除推荐数据
 
 const AuctionGetHouseSateList = '/auction/getHouseSateList' //获取专场列表
 
+// 用户管理
+const UserSetUserLabel = '/user/v1/addTag'
+
 export {
   ImageApi,
   RequestApi,
@@ -93,6 +102,13 @@ export {
   Login,
   LogisticsList,
   QueryByOwenerIdAndOwnerType,
+
+  ConsoleDeskQueryCalDataCenter,
+  ConsoleDeskQueryCalDataOrder,
+  DataHotUser,
+  DataHotProduct,
+  ConsoleDeskQueryOrderMap,
+
   CategoryFindAllCate,
   CateAddCate,
   CateUpdateCate,
@@ -150,4 +166,6 @@ export {
   RecommendUpdate,
   RecommendDelete,
   AuctionGetHouseSateList,
+
+  UserSetUserLabel,
 }

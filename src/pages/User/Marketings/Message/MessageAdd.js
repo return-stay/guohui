@@ -215,11 +215,9 @@ class MessageAdd extends React.Component {
           {
             terminalTypeShow === 'inner' && <>
               <Form.Item label="跳转类型">
-                {getFieldDecorator('contentType', { valuePropName: 'value', rules: [{ required: true, message: "请输入跳转类型" }] })(
+                {getFieldDecorator('contentType', { valuePropName: 'value', initialValue: 11,  rules: [{ required: true, message: "请输入跳转类型" }] })(
                   <Radio.Group disabled={disabled} onChange={this.contentTypeChange}>
                     <Radio value={11}>商品</Radio>
-                    <Radio value={12}>拍品</Radio>
-                    <Radio value={13}>专场</Radio>
                   </Radio.Group>
                 )}
               </Form.Item>

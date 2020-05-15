@@ -146,7 +146,7 @@ class MessageManage extends React.Component {
       },
     ]
     return (
-      <div className="om-box">
+      <div className="om-box user-box">
         <div>
           <Tabs activeKey={tabValue} onChange={this.tabChange}>
             <TabPane tab="消息列表" key="1">

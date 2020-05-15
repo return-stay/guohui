@@ -229,7 +229,7 @@ class InTheAudit extends React.Component {
     ]
 
     return (
-      <>
+      <div className="user-box">
         {
           titleList && titleList.length > 0 && (
             <div >
@@ -264,7 +264,7 @@ class InTheAudit extends React.Component {
         />
 
         <AuditDecline triggerRef={ref => this.audtChild = ref} successCallback={this.auditDeclineCallback} />
-      </>
+      </div>
     )
   }
 }

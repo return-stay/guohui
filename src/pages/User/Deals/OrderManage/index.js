@@ -152,7 +152,7 @@ export default class OrderManage extends React.Component {
                 arr.map((item, i) => {
                   return <div key={i}>
                     <Gimage style={{ height: 30, }} src={item.productCover} alt="图片" />
-                    <p>{item.productName}</p>
+                    <p>{item.productName} &nbsp; X {item.count}</p>
                   </div>
                 })
               }
@@ -196,7 +196,12 @@ export default class OrderManage extends React.Component {
           dataIndex: 'orderPrice',
           width: 140,
         },
-
+        {
+          title: "优惠金额",
+          key: 'couponPrice',
+          dataIndex: 'couponPrice',
+          width: 140,
+        },
         {
           title: '所属店铺',
           key: 'shopId',
@@ -206,27 +211,30 @@ export default class OrderManage extends React.Component {
             return <span>{shopItem.shopName}</span>
           }
         },
-        // {
-        //   title: '支付类型',
-        //   key: 'payType',
-        //   dataIndex: 'payType',
-        //   width: 120,
-        //   render(payType) {
-        //     let text = ''
-        //     if (payType === 'WX-JSAPI') {
-        //       text = '微信支付'
-        //     } else if (payType === 'WX-APP') {
-        //       text = '微信APP支付'
-        //     } else if (payType === 'ALI-PAY') {
-        //       text = '支付宝'
-        //     } else if (payType === 'BALANCE') {
-        //       text = '余额'
-        //     } else if (payType === 'TRANSFER') {
-        //       text = '转账'
-        //     }
-        //     return text
-        //   }
-        // },
+        {
+          title: '支付类型',
+          key: 'payType',
+          dataIndex: 'payType',
+          width: 120,
+          render(payType) {
+            let text = ''
+
+            switch (payType) {
+              case "JSAPI":
+                text = '小程序支付'
+                break;
+              case "APP":
+                text = '微信APP支付'
+                break;
+              case "ALI-PAY":
+                text = '支付宝'
+                break
+              default:
+                text = ''
+            }
+            return text
+          }
+        },
         {
           title: '下单时间',
           key: 'createTimeStr',
@@ -306,7 +314,7 @@ export default class OrderManage extends React.Component {
     ]
 
     return (
-      <div className="om-box">
+      <div className="om-box user-box">
         <div>
           <Tabs defaultActiveKey={orderStatus} onChange={this.orderTabChange}>
             {

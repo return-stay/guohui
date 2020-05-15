@@ -319,7 +319,7 @@ class ShopManageTable extends React.Component {
     ]
 
     return (
-      <>
+      <div className="user-box">
         <div style={{ padding: '10px' }}>
           <BaseForm data={searchData} handleSearch={this.formSearch} />
         </div>
@@ -339,7 +339,7 @@ class ShopManageTable extends React.Component {
           editCallback={this.editCallback}
           selectChange={this.selectChange}
         />
-      </>
+      </div>
     )
   }
 }

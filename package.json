@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@antv/data-set": "^0.11.4",
+    "@antv/g2": "^4.0.7",
     "@babel/core": "7.4.3",
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@lingui/react": "^2.9.1",

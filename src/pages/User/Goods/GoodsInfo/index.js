@@ -76,7 +76,7 @@ class GoodsInfo extends React.Component {
     }
     const { info, majorLabels, minorLabels, skuList, productPicUrlList, productPicUrl, videoPic } = this.state
     return (
-      <div className="goods-info add-goods-box">
+      <div className="goods-info add-goods-box user-box">
         <Form>
 
           <Card title="基础信息" bordered={false}>

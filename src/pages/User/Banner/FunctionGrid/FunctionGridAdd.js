@@ -220,7 +220,7 @@ class FunctionGridAdd extends React.Component {
             {getFieldDecorator('type', { valuePropName: 'value', initialValue: 'diamond', rules: [{ required: true, message: "请选择位置" }] })(
               <Select placeholder='请选择所在位置' style={{ width: 400 }}>
                 {getOptionsList([
-                  { id: 'diamond', value: 'diamond', label: '首页金刚区（48*48）' },
+                  { id: 'diamond', value: 'diamond', label: '首页金刚区（120*120）' },
                   // { id: 'mallDiamond', value: 'mallDiamond', label: '商城金刚区（48*48）' },
                 ])}
               </Select>
@@ -276,8 +276,6 @@ class FunctionGridAdd extends React.Component {
                 {getFieldDecorator('contentType', { valuePropName: 'value', rules: [{ required: true, message: "请输入跳转类型" }] })(
                   <Radio.Group disabled={disabled} onChange={this.contentTypeChange}>
                     <Radio value={11}>商品</Radio>
-                    <Radio value={12}>拍品</Radio>
-                    <Radio value={13}>专场</Radio>
                     <Radio value={10}>分类</Radio>
                   </Radio.Group>
                 )}

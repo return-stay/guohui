@@ -352,7 +352,15 @@ export default class GoodsList extends React.Component {
                         return <span>{item.categoryOneName}/{item.categoryTwoName}</span>
                     }
                 },
-
+                {
+                    title: '所属商铺',
+                    key: 'shopName',
+                    width: 160,
+                    render(item) {
+                        let shopName = item.shopDTO && item.shopDTO.shopName
+                        return <span>{shopName}</span>
+                    }
+                },
                 {
                     title: '现价',
                     key: 'salePrice',
@@ -462,7 +470,7 @@ export default class GoodsList extends React.Component {
         }
         const operations = <Button icon="delete" onClick={this.goGoodsRecycleBin}>商品回收站</Button>;
         return (
-            <div>
+            <div className="user-box">
                 <div style={{ display: !isAddGood ? 'block' : 'none' }} >
                     {
                         titleList && titleList.length > 0 && (

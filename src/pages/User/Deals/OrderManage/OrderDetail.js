@@ -68,7 +68,7 @@ export default class OrderDetail extends React.Component {
     //   payTypeText = '转账'
     // }
     return (
-      <div className="od-detail">
+      <div className="od-detail user-box">
         <div className="od-top">
           <Card title={"订单信息：" + info.orderNo} style={{ flex: 2, border: 'none', marginRight: '20px' }}>
             <div>
