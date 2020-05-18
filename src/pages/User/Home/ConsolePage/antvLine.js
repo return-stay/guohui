@@ -131,40 +131,6 @@ class AntvLine extends React.Component {
       });;
 
     chart.render();
-
-    // const chart = this.state.lineChart
-
-    // chart.data(data);
-    // chart.scale({
-    //   month: {
-    //     range: [0, 1],
-    //   },
-    //   temperature: {
-    //     nice: true,
-    //   },
-    // });
-
-    // chart.tooltip({
-    //   showCrosshairs: true,
-    //   shared: true,
-    // });
-
-    // chart
-    //   .line()
-    //   .position('month*temperature')
-    //   .color('month')
-    //   .shape('smooth');
-
-    // chart
-    //   .point()
-    //   .position('month*temperature')
-    //   .color('month')
-    //   .shape('circle');
-
-    // chart.render();
-
-
-
   }
 
   onMonthChange = (date, dateString) => {
@@ -190,7 +156,7 @@ class AntvLine extends React.Component {
           <h5 className="table-title">订单统计</h5>
           <MonthPicker onChange={this.onMonthChange} disabledDate={this.disabledDate} value={defaultYm} format={monthFormat} placeholder="Select month" />
         </div>
-        
+
         <div id='line-antv'></div>
       </>
     )

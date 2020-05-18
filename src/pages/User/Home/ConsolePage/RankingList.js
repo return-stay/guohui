@@ -115,18 +115,18 @@ export default class RankingList extends React.Component {
             width: 80,
           },
           {
-            title: "图",
+            title: "商品名称",
+            key: 'productName',
+            dataIndex: 'productName',
+          },
+          {
+            title: "商品图片",
             key: 'productCover',
             dataIndex: 'productCover',
             width: 80,
             render(productCover) {
               return <Gimage src={productCover} style={{ height: 30 }} />
             }
-          },
-          {
-            title: "商品名称",
-            key: 'productName',
-            dataIndex: 'productName',
           },
           {
             title: "订单数",

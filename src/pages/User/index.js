@@ -11,7 +11,6 @@ import { Layout, Menu, Icon, Tooltip } from 'antd'
 import WechatIMG236 from '../../asset/login/WechatIMG236.jpeg'
 // import { recursionRouterTwo } from '../../utils/recursion-router'
 const { Header, Content, Sider } = Layout
-
 @connect
 class User extends React.Component {
     state = {

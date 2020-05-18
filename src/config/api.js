@@ -94,6 +94,9 @@ const AuctionGetHouseSateList = '/auction/getHouseSateList' //获取专场列表
 // 用户管理
 const UserSetUserLabel = '/user/v1/addTag'
 
+// 设置
+const UpgradeAdd = '/grade/add'
+
 export {
   ImageApi,
   RequestApi,
@@ -168,4 +171,6 @@ export {
   AuctionGetHouseSateList,
 
   UserSetUserLabel,
+
+  UpgradeAdd,
 }

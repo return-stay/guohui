@@ -20,6 +20,7 @@ import marketingRouter from './router/marketingRouter'
 // import couponRouter from './router/couponRouter'
 import bannerRouter from './router/bannerRouter'
 import longhairRouter from './router/longhairRouter'
+import settingRouter from './router/settingRouter'
 // import Index from './pages/User/Home'
 const routerDevelop = [
   {
@@ -47,6 +48,7 @@ const routerDevelop = [
   // ...micromallsRouter,
   // ...appsRouter,
   // ...appletsRouter,
+  ...settingRouter,
 ]
 
 export default routerDevelop
