@@ -177,24 +177,24 @@ class BannerManage extends React.Component {
         },
         {
           title: '广告类型',
-          key: 'id',
-          dataIndex: 'id',
+          key: 'carousel',
+          dataIndex: 'carousel',
           render() {
-            let text = ''
-            if (bannerType === 'advert') {
-              text = '首页广告'
-            } else if (bannerType === 'mallAdvert') {
-              text = '商城广告'
-            } else if (bannerType === 'carouse') {
-              text = '首页轮播图'
-            } else if (bannerType === 'mallCarousel') {
-              text = '商城轮播图'
-            } else if (bannerType === 'openImage') {
-              text = '启动图'
-            } else if (bannerType === 'popupImage') {
-              text = '弹窗广告'
-            }
-            return <span>{text}</span>
+            // let text = ''
+            // if (bannerType === 'advert') {
+            //   text = '首页广告'
+            // } else if (bannerType === 'mallAdvert') {
+            //   text = '商城广告'
+            // } else if (bannerType === 'carouse') {
+            //   text = '首页轮播图'
+            // } else if (bannerType === 'mallCarousel') {
+            //   text = '商城轮播图'
+            // } else if (bannerType === 'openImage') {
+            //   text = '启动图'
+            // } else if (bannerType === 'popupImage') {
+            //   text = '弹窗广告'
+            // }
+            return <span>首页轮播图</span>
           }
         },
         {

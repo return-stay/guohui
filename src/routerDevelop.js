@@ -9,7 +9,7 @@ import shopsRouter from './router/shopsRouter'
 // import systemsRouter from './router/systemsRouter'
 // import websitesRouter from './router/websitesRouter'
 // import distributionsRouter from './router/distributionsRouter'
-import marketingRouter from './router/marketingRouter'
+// import marketingRouter from './router/marketingRouter'
 // import micromallsRouter from './router/micromallsRouter'
 // import appsRouter from './router/appsRouter'
 // import appletsRouter from './router/appletsRouter'
@@ -43,7 +43,7 @@ const routerDevelop = [
   // ...websitesRouter,
   // ...distributionsRouter,
   // ...systemsRouter,
-  ...marketingRouter,
+  // ...marketingRouter,
   ...longhairRouter,
   // ...micromallsRouter,
   // ...appsRouter,

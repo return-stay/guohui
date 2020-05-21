@@ -1,18 +1,18 @@
 import React from 'react'
 import { Modal, Form, Input, Radio, message } from "antd";
-import connect from '../../../../utils/connect'
 import request from "../../../../utils/request";
 import { UpgradeAdd } from '../../../../config/api'
+import Gupload from '../../../../common/Gupload'
+import upload_success from '../../../../asset/home/upload_success.png'
 const { TextArea } = Input
-@connect
 class LonghairAddFrom extends React.Component {
   constructor() {
     super()
-
     this.state = {
       disabled: false,
       visible: false,
-      title: '添加'
+      title: '添加',
+      address: '',
     }
   }
 
@@ -55,18 +55,6 @@ class LonghairAddFrom extends React.Component {
     })
   }
 
-
-  houseSateChange = (e) => {
-    this.props.form.setFieldsValue({ paramContent: e })
-  }
-
-  terminalTypeChange = (e) => {
-    this.setState({
-      terminalTypeShow: e.target.value
-    })
-  }
-
-
   editorChangeCallback = (html) => {
     this.setState({
       txtHtml: html
@@ -75,30 +63,25 @@ class LonghairAddFrom extends React.Component {
     })
   }
 
-  uploadSuccessCallback = (img, type) => {
-    console.log(img)
-    let obj = {}
-    switch (type) {
-      case 'portrait':
-        obj.portrait = img
-        break;
-      case 'videoUrl':
-        obj.videoUrl = img
-        break;
-      default:
-        obj = {}
+  uploadSuccessCallback = (img) => {
+    if (img) {
+      this.setState({
+        address: upload_success
+      })
+      this.props.form.setFieldsValue({ address: img })
+    } else {
+      this.setState({
+        address: ''
+      })
     }
-    this.setState({
-      ...obj
-    })
-    // this.props.form.setFieldsValue({ portrait: img })
+
   }
   render() {
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
-    const { disabled, visible, title } = this.state
+    const { disabled, visible, title, address } = this.state
     const { getFieldDecorator } = this.props.form;
     return (
 
@@ -122,17 +105,24 @@ class LonghairAddFrom extends React.Component {
               <Input style={{ width: 400 }} disabled={disabled} />
             )}
           </Form.Item>
-          <Form.Item label="下载地址">
-            {getFieldDecorator('address', { valuePropName: 'value', rules: [{ required: true, message: "请输入下载地址" }] })(
-              <Input style={{ width: 400 }} disabled={disabled} />
+          <Form.Item label="上传APK">
+            {getFieldDecorator('address', { valuePropName: 'value', rules: [{ required: true, message: "请上传APK" }] })(
+              <Gupload file={address} uploadButtonText="上传APK" success={img => this.uploadSuccessCallback(img)} />
             )}
           </Form.Item>
-
           <Form.Item label="是否强制升级">
             {getFieldDecorator('mustUp', { valuePropName: 'value', initialValue: 0, rules: [{ required: true }] })(
-              <Radio.Group onChange={this.terminalTypeChange} disabled={disabled}>
+              <Radio.Group disabled={disabled}>
                 <Radio value={0}>否</Radio>
                 <Radio value={1}>是</Radio>
+              </Radio.Group>
+            )}
+          </Form.Item>
+          <Form.Item label="适用平台">
+            {getFieldDecorator('platform', { valuePropName: 'value', initialValue: 0, rules: [{ required: true }] })(
+              <Radio.Group disabled={disabled}>
+                <Radio value='ios'>IOS</Radio>
+                <Radio value='android'>Android</Radio>
               </Radio.Group>
             )}
           </Form.Item>

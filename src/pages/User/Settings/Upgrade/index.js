@@ -24,7 +24,7 @@ export default class Upgrade extends React.Component {
     this.tableChild.sortingParameters();
   }
   render() {
-    const _columns = (that) => {
+    const _columns = () => {
       return [
         {
           title: 'APP名称',
@@ -55,6 +55,13 @@ export default class Upgrade extends React.Component {
           render(sex) {
             return <span>{sex === 0 ? '否' : '是'}</span>
           }
+        },
+        {
+          title: '适用平台',
+          key: 'platform',
+          dataIndex: 'platform',
+          align: 'center',
+          width: 100,
         },
         {
           title: '升级说明',
@@ -109,8 +116,6 @@ export default class Upgrade extends React.Component {
         selectChange={this.selectChange}
         triggerRef={ref => { this.tableChild = ref }}
       />
-
-
       <AddUpgrade triggerRef={ref => { this.addChild = ref }} successCallback={this.addSuccess} />
     </div>
   }

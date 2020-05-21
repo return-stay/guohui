@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import connect from '../../utils/connect'
 import './index.less'
 
-
 @connect
 class Gupload extends React.Component {
 

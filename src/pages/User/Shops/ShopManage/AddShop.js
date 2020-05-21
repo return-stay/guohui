@@ -290,7 +290,7 @@ class AddShop extends React.Component {
       wrapperCol: { span: 19 },
     }
     return (
-      <div className="add-shop-box">
+      <div className="add-shop-box user-box">
 
         <Row>
           <Col span={4} style={{ textAlign: 'right', color: 'rgba(0, 0, 0, 0.85)' }}></Col>

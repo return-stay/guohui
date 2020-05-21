@@ -83,6 +83,10 @@ const ConfigDelete = '/config/delete' //删除配置
 const ConfigDetail = '/config/detail' //广告详情
 const ConfigUpdate = 'config/update' //更新配置
 
+const RecommendDeleteRecommend = '/recommend/deleteRecommend' //删除推荐商品
+const RecommendDownRecommend = '/recommend/downRecommend' //下线推荐商品
+const RecommendConfigRecommendProduct = '/recommend/configRecommendProduct' //添加推荐商品
+
 // 一口价
 const RecommendAdd = '/recommend/add' // 推荐数据添加
 const RecommendDetail = '/recommend/detail' //推荐数据详情
@@ -163,6 +167,9 @@ export {
   ConfigDelete,
   ConfigDetail,
   ConfigUpdate,
+  RecommendDeleteRecommend,
+  RecommendDownRecommend,
+  RecommendConfigRecommendProduct,
 
   RecommendAdd,
   RecommendDetail,

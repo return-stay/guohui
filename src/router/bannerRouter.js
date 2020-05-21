@@ -4,6 +4,7 @@ import {
   BannerManage,
   FunctionGrid,
   // MallFunctionGrid,
+  HomeRecommend,
   Operation,
   BuyItNow,
 } from '../pages/User/Banner'
@@ -31,12 +32,13 @@ const bannerRouter = [
         name: '金刚区管理',
         icon: 'appstore',
       },
-      // {
-      //   path: '/user/banner/mallFunctionGrid',
-      //   pathName: 'mall-function-grid',
-      //   component: MallFunctionGrid,
-      //   name: '商城金刚区',
-      // },
+      {
+        path: '/user/banner/homeRecommend',
+        pathName: 'banner-home-recommend',
+        component: HomeRecommend,
+        name: '首页推荐',
+        icon: 'like',
+      },
       {
         path: '/user/banner/operation',
         pathName: 'operation',
