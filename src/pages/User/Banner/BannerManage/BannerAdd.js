@@ -239,11 +239,11 @@ class BannerAdd extends React.Component {
               <Select placeholder='请选择广告类型' style={{ width: 400 }} onChange={this.slectTypeChange}>
                 {getOptionsList([
                   { id: 'carousel', value: 'carousel', label: '首页轮播图（690*406）' },
+                  { id: 'openImage', value: 'openImage', label: '启动图（1920*1080）' },
+                  { id: 'popupImage', value: 'popupImage', label: '弹窗广告图（564*890）' },
                   // { id: 'advert', value: 'advert', label: '首页广告（685*140）' },
                   // { id: 'mallAdvert', value: 'mallAdvert', label: '商城广告（685*140）' },
                   // { id: 'mallCarousel', value: 'mallCarousel', label: '商城轮播图（680*406）' },
-                  // { id: 'openImage', value: 'openImage', label: '启动图（1920*1080）' },
-                  // { id: 'popupImage', value: 'popupImage', label: '弹窗广告图（564*890）' },
                 ])}
               </Select>
             )}

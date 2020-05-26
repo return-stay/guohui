@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, message, Divider, Tabs } from 'antd'
+import { Modal, message, Divider, Tabs, Radio } from 'antd'
 import GtableEdit from '../../../../common/GtableEdit'
 import request from '../../../../utils/request'
 import BannerAdd from './BannerAdd'
@@ -11,7 +11,7 @@ class BannerManage extends React.Component {
     isDetail: false,
     tabKey: '1',
     tabValue: '新增广告',
-    typeValue: 1,
+    typeValue: 3,
     bannerType: 'carousel',
     urls: {
       list: '/config/search',
@@ -110,7 +110,7 @@ class BannerManage extends React.Component {
     let value = e.target.value
 
     let bannerType = ''
-    // 轮播=carousel,金刚区=diamond,卡片区=card,广告位=advert
+    // 轮播=carousel,金刚区=diamond,卡片区=card,广告位=advert  轮播:carouse/金刚:diamond/卡片:card/开屏图:openImage/弹出广告:popupImage)
     switch (value) {
       case 1:
         bannerType = 'advert'
@@ -119,7 +119,7 @@ class BannerManage extends React.Component {
         bannerType = 'mallAdvert'
         break;
       case 3:
-        bannerType = 'carouse'
+        bannerType = 'carousel'
         break;
       case 4:
         bannerType = 'mallCarousel'
@@ -254,16 +254,14 @@ class BannerManage extends React.Component {
         <div>
           <Tabs activeKey={tabKey} onChange={this.tabChange}>
             <TabPane tab="广告列表" key="1">
-              {/* <Radio.Group onChange={this.onRadioChange} value={typeValue} style={{ marginBottom: 20, marginLeft: 30 }}>
-                <Radio value={1}>首页广告</Radio>
+              <Radio.Group onChange={this.onRadioChange} value={typeValue} style={{ marginBottom: 20, marginLeft: 30 }}>
+                {/* <Radio value={1}>首页广告</Radio>
                 <Radio value={2}>商城广告</Radio>
-
+                <Radio value={4}>商城轮播图</Radio> */}
                 <Radio value={3}>首页轮播图</Radio>
-                <Radio value={4}>商城轮播图</Radio>
-
                 <Radio value={5}>启动图</Radio>
                 <Radio value={6}>弹窗广告</Radio>
-              </Radio.Group> */}
+              </Radio.Group>
 
               <GtableEdit
                 urls={urls}
