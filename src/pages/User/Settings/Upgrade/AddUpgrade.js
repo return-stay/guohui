@@ -13,6 +13,7 @@ class LonghairAddFrom extends React.Component {
       visible: false,
       title: '添加',
       address: '',
+      platType: '',
     }
   }
 
@@ -74,14 +75,19 @@ class LonghairAddFrom extends React.Component {
         address: ''
       })
     }
-
+  }
+  platformChange = (e) => {
+    console.log(e)
+    this.setState({
+      platType: e.target.value
+    })
   }
   render() {
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
-    const { disabled, visible, title, address } = this.state
+    const { disabled, visible, title, address, platType } = this.state
     const { getFieldDecorator } = this.props.form;
     return (
 
@@ -105,24 +111,33 @@ class LonghairAddFrom extends React.Component {
               <Input style={{ width: 400 }} disabled={disabled} />
             )}
           </Form.Item>
-          <Form.Item label="上传APK">
-            {getFieldDecorator('address', { valuePropName: 'value', rules: [{ required: true, message: "请上传APK" }] })(
-              <Gupload file={address} uploadButtonText="上传APK" success={img => this.uploadSuccessCallback(img)} />
+          <Form.Item label="适用平台">
+            {getFieldDecorator('platform', { valuePropName: 'value', initialValue: 0, rules: [{ required: true }] })(
+              <Radio.Group disabled={disabled} onChange={this.platformChange}>
+                <Radio value='ios'>IOS</Radio>
+                <Radio value='android'>Android</Radio>
+              </Radio.Group>
             )}
           </Form.Item>
+          {
+            platType === 'android' ?
+              <Form.Item label="上传APK">
+                {getFieldDecorator('address', { valuePropName: 'value', rules: [{ required: true, message: "请上传APK" }] })(
+                  <Gupload file={address} uploadButtonText="上传APK" success={img => this.uploadSuccessCallback(img)} />
+                )}
+              </Form.Item>
+              :
+              <Form.Item label="下载地址">
+                {getFieldDecorator('address', { valuePropName: 'value', rules: [{ required: true, message: "请输入下载地址" }] })(
+                  <Input style={{ width: 400 }} disabled={disabled} />
+                )}
+              </Form.Item>
+          }
           <Form.Item label="是否强制升级">
             {getFieldDecorator('mustUp', { valuePropName: 'value', initialValue: 0, rules: [{ required: true }] })(
               <Radio.Group disabled={disabled}>
                 <Radio value={0}>否</Radio>
                 <Radio value={1}>是</Radio>
-              </Radio.Group>
-            )}
-          </Form.Item>
-          <Form.Item label="适用平台">
-            {getFieldDecorator('platform', { valuePropName: 'value', initialValue: 0, rules: [{ required: true }] })(
-              <Radio.Group disabled={disabled}>
-                <Radio value='ios'>IOS</Radio>
-                <Radio value='android'>Android</Radio>
               </Radio.Group>
             )}
           </Form.Item>
