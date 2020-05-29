@@ -1,13 +1,41 @@
 import React from 'react'
 import { Button } from 'antd'
+import baseURL from '../../utils/baseUrl'
+import {searchJoint} from '../../utils'
+// import request from '../../utils/request'
 import PropTypes from 'prop-types';
 
 class Gexport extends React.Component {
   // 导出列表那牛
-  handleExport = (e)=> {}
+  handleExport = (e)=> {
+    const {url, query} = this.props
+    const queryStr = searchJoint(query)
+    const queryUrl = `${baseURL}${url}${queryStr}`;
+    window.location.href = queryUrl;
+    // console.log(this.props.query)
+    // 
+    // const token = localStorage.getItem('authed')
+    // request({
+    //   url: url,
+    //   method: 'get',
+    //   params: {
+    //     ...query,
+    //     token,
+    //   }
+    // }).then(res => {
+    //   if (res.code === 100) {
+    //     message.success('成功');
+    //     // that.tableChild.sortingParameters();
+    //   }
+    // }).catch((err) => {
+    //   // message.error(err.message)
+    //   message.error('失败')
+    // })
+  }
   render () {
+    const {btnType, btnStyle, btnText  } = this.props
     return (
-      <Button type={this.props.btnType} style={this.props.btnStyle} onClick={this.handleExport}>{this.props.btnText}</Button>
+      <Button type={btnType} style={btnStyle} onClick={this.handleExport}>{btnText}</Button>
     )
   }
 }

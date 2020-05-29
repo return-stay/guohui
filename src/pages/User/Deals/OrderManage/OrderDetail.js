@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Card, Icon, Table, Collapse, Modal, Steps, message } from 'antd'
 import { dismantleSearch } from '../../../../utils'
-import { OrderDetailApi } from '../../../../config/api'
+import { OrderDetailApi,OrderMainDetail } from '../../../../config/api'
 import request from '../../../../utils/request'
 import Gimage from '../../../../common/Gimage'
 import './index.less'
@@ -16,6 +16,7 @@ export default class OrderDetail extends React.Component {
       childDTO: { productDTOList: [] },
       info: { OrderDetails: [], express: {}, addressDTO: {} },
       payDTO: {},
+      productDTOList: []
     }
   }
   componentDidMount() {
@@ -30,11 +31,30 @@ export default class OrderDetail extends React.Component {
         md5Str: localStorage.getItem('authed')
       },
     }).then(res => {
-      console.log(res.data.payDTO)
       this.setState({
         info: res.data,
         childDTO: res.data.childDTO,
         payDTO: res.data.payDTO || {},
+      })
+    })
+    this.getOrderMainDetail()
+  }
+
+  getOrderMainDetail = () => {
+    let obj = dismantleSearch(this)
+    this.setState({
+      ...obj
+    })
+    console.log(obj)
+    request({
+      url: OrderMainDetail,
+      params: {
+        mainOrderNo: obj.mainid,
+        md5Str: localStorage.getItem('authed')
+      },
+    }).then(res => {
+      this.setState({
+        productDTOList: res.data.productDTOList
       })
     })
   }
@@ -53,7 +73,7 @@ export default class OrderDetail extends React.Component {
   }
 
   render() {
-    const { info, childDTO, payDTO } = this.state
+    const { info, childDTO, payDTO, productDTOList } = this.state
     // let payTypeText = ''
     // let payType = payDTO.payType
     // if (payType === 'WX-JSAPI') {
@@ -141,8 +161,11 @@ export default class OrderDetail extends React.Component {
           <Icon type="file-text" /> 商品信息
         </div>
         <div className="order-list">
-          {
+          {/* {
             childDTO && childDTO.productDTOList.length > 0 && <OrderList dataSource={childDTO.productDTOList} />
+          } */}
+          {
+            productDTOList.length > 0 && <OrderList dataSource={productDTOList} />
           }
         </div>
 
@@ -207,17 +230,23 @@ const OrderList = (props) => {
       }
     },
     {
-      title: '单价',
-      key: 'productPrice',
-      dataIndex: 'productPrice',
+      title: '商品规格',
+      key: 'specParam',
+      dataIndex: 'specParam',
+      width: 200,
     },
     {
       title: '购买数量',
-      key: 'count',
-      dataIndex: 'count',
+      key: 'skuCount',
+      dataIndex: 'skuCount',
     },
     {
-      title: '规格',
+      title: '单价',
+      key: 'salePrice',
+      dataIndex: 'salePrice',
+    },
+    {
+      title: '主标签',
       key: 'minorLabels',
       render(item) {
         let minorLabelsStr = item.minorLabels.join(',')

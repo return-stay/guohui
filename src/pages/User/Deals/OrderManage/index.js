@@ -56,7 +56,8 @@ export default class OrderManage extends React.Component {
   }
 
   checkDetail = (item) => {
-    this.props.history.push('/user/deals/orderDetail?id=' + item.orderNo)
+    const str = `/user/deals/orderDetail?id=${item.orderNo}&mainid=${item.orderMainNo}`
+    this.props.history.push(str)
   }
 
   consignmentModalShow = (item) => {
@@ -152,8 +153,23 @@ export default class OrderManage extends React.Component {
                 arr.map((item, i) => {
                   return <div key={i}>
                     <Gimage style={{ height: 30, }} src={item.productCover} alt="图片" />
-                    <p>{item.productName} &nbsp; X {item.count}</p>
+                    <p>{item.productName}</p>
                   </div>
+                })
+              }
+            </div>
+          }
+        },
+        {
+          title: '商品规格',
+          key: 'specParam',
+          width: 200,
+          render(item) {
+            let arr = item.productList || []
+            return <div>
+              {
+                arr.map((item, i) => {
+                  return <div key={i}>{item.specParam} &nbsp; X {item.count}</div>
                 })
               }
             </div>
@@ -331,6 +347,12 @@ export default class OrderManage extends React.Component {
           <GtableEdit
             urls={urls}
             rowKey={record => record.orderNo}
+            exportProps={{
+              isShow: true,
+              url: '/order/v1/export',
+              btnStyle: { marginRight: 16, marginTop: 10, marginBottom: 10 },
+              query: { pageNumber: 1, state: Number(orderStatus) },
+            }}
             searchData={searchData}
             columns={_columns}
             bordered={false}

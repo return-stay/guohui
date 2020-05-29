@@ -439,7 +439,7 @@ class GtableEdit extends React.Component {
       }
     }
     let functionButtons = this.props.functionButtons || {}
-    const { bordered, rowKey, tableBoxClass, showHeader, size, scrollX } = this.props
+    const { bordered, rowKey, tableBoxClass, showHeader, size, scrollX ,exportProps} = this.props
     return (
       <div className={tableBoxClass}>
         {
@@ -455,6 +455,13 @@ class GtableEdit extends React.Component {
           )
         }
         {this.props.isTitleTabsShow && this.props.titleList && this.props.titleList.length > 0 && <div style={{ height: 8 }}></div>}
+        {
+          this.props.searchData && this.props.searchData.length > 0 && (
+            <Card>
+              <BaseForm data={this.props.searchData} handleSearch={this.search} />
+            </Card>
+          )
+        }
 
         <div style={{ textAlign: functionButtons.textAlign || 'left' }}>
           {functionButtons.isAdd && (
@@ -477,25 +484,19 @@ class GtableEdit extends React.Component {
             )
           }
           {
-            functionButtons.isExport && (
-              <Gexport btnStyle={{ marginRight: 16, marginTop: 10, marginBottom: 10 }} />
+            exportProps.isShow && (
+              <Gexport url={exportProps.url} query={exportProps.query} btnText={exportProps.btnText} btnStyle={exportProps.btnStyle} btnType={exportProps.btnType} />
             )
           }
           {
             functionButtons.isCustom && (
-              <Button onClick={this.handleCustom} type="primary" style={{ marginRight: 16, marginTop: 10, marginBottom: 10 }}>
+              <Button onClick={this.handleCustom} type="primary" icon={functionButtons.customIcon} style={{ marginRight: 16, marginTop: 10, marginBottom: 10 }}>
                 {functionButtons.customText}
               </Button>
             )
           }
         </div>
-        {
-          this.props.searchData && this.props.searchData.length > 0 && (
-            <Card>
-              <BaseForm data={this.props.searchData} handleSearch={this.search} />
-            </Card>
-          )
-        }
+       
         <Table
           size={size}
           showHeader={showHeader}
