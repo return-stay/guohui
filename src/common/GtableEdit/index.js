@@ -519,6 +519,7 @@ class GtableEdit extends React.Component {
 
 
 GtableEdit.propTypes = {
+  exportProps: PropTypes.object,
   didMountShow: PropTypes.bool,
   tableBoxClass: PropTypes.string, //根路径类名
   urls: PropTypes.object, //请求路径{list: 获取列表， delete:删除, upload:导出}
@@ -545,6 +546,8 @@ GtableEdit.propTypes = {
 }
 
 GtableEdit.defaultProps = {
+  exportProps: {},
+  functionButtons: {},
   didMountShow: true, //是否在componentDidMount 的时候加载列表
   isRowSelection: true,
   bordered: false,
