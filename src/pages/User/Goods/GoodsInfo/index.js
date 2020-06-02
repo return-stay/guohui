@@ -144,8 +144,8 @@ class GoodsInfo extends React.Component {
               <Col span={8}>
                 <div className="col-width">
                   <Form.Item label=" " colon={false} {...formInfoLayout}>
-                    <p>商品名称：</p>
-                    <span>{info.unit}</span>
+                    <p>商品单位：</p>
+                    <span>{info.productUnit}</span>
                   </Form.Item>
                 </div>
               </Col>
@@ -193,17 +193,14 @@ class GoodsInfo extends React.Component {
                     <div className="params-box">
                       {
                         skuList.map((item, index) => {
-
                           return item && (
-                            <div className="params-item" key={item.indexes}>
+                            <div className="params-item" key={index}>
                               <span className="params-item-title">参数{index + 1}：</span>
                               <span className="label-class">{item.specParam}</span>
                               <span className="params-item-bd"></span>
                               <span className="label-class">原价 ￥{item.originalPrice}</span>
                               <span className="label-class price-class">售价 ￥{item.productPrice}</span>
-                              {/* <span className="label-class price-class">现价 ￥{item.currentPrice}</span>
-                              <span className="label-class">原价 ￥{item.originalPrice}</span>
-                              <span className="label-class">会员价 ￥{item.memberPrice}</span> */}
+                              <span className="label-class price-class">企业会员价 ￥{item.comMemberPrice}</span>
                               <div className="params-item-repertory">
                                 <span>商品库存：</span>
                                 <span>{item.stock || null}</span>
@@ -212,7 +209,8 @@ class GoodsInfo extends React.Component {
                           )
                         })
                       }
-                    </div></Col>
+                    </div>
+                  </Col>
                 </Row>
               </Col>
             </Row>

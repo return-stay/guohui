@@ -490,9 +490,9 @@ export default class GoodsList extends React.Component {
 
                     <div>
                         {isAddBtnShow && <Button type="primary" icon="plus" style={{ margin: '10px' }} onClick={this.addGoods}>添加</Button>}
-                        <Button style={{ margin: '10px' }} onClick={this.batchDelete}>批量删除</Button>
+                        {/* <Button style={{ margin: '10px' }} onClick={this.batchDelete}>批量删除</Button>
                         <Button style={{ margin: '10px' }} onClick={this.batchSoldOut}>批量上架</Button>
-                        <Button style={{ margin: '10px' }} onClick={this.batchPutaway}>批量下架</Button>
+                        <Button style={{ margin: '10px' }} onClick={this.batchPutaway}>批量下架</Button> */}
                     </div>
                     {
                         isGoodsSetting ? <GtableEdit
