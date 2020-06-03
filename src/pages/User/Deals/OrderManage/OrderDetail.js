@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Card, Icon, Table, Collapse, Modal, Steps, message } from 'antd'
 import { dismantleSearch } from '../../../../utils'
-import { OrderDetailApi,OrderMainDetail } from '../../../../config/api'
+import { OrderDetailApi, OrderMainDetail, ShipDetail } from '../../../../config/api'
 import request from '../../../../utils/request'
 import Gimage from '../../../../common/Gimage'
 import './index.less'
@@ -31,10 +31,11 @@ export default class OrderDetail extends React.Component {
         md5Str: localStorage.getItem('authed')
       },
     }).then(res => {
+      const resdata = res.data
       this.setState({
-        info: res.data,
-        childDTO: res.data.childDTO,
-        payDTO: res.data.payDTO || {},
+        info: resdata,
+        childDTO: resdata.childDTO,
+        payDTO: resdata.payDTO || {},
       })
     })
     this.getOrderMainDetail()
@@ -53,6 +54,7 @@ export default class OrderDetail extends React.Component {
         md5Str: localStorage.getItem('authed')
       },
     }).then(res => {
+      console.log(res)
       this.setState({
         productDTOList: res.data.productDTOList
       })
@@ -64,9 +66,12 @@ export default class OrderDetail extends React.Component {
   }
 
   showExpress = (e) => {
-    console.log(e)
-    if (this.state.info.express && this.state.info.express.data) {
-      this.logisticsChild.show()
+    const childDTO = this.state.childDTO
+    if (childDTO.shipNo && childDTO.shipChannel) {
+      this.logisticsChild.show({
+        channel: childDTO.shipChannel,
+        shipNo: childDTO.shipNo
+      })
     } else {
       message.warning('暂无物流详细信息')
     }
@@ -161,25 +166,10 @@ export default class OrderDetail extends React.Component {
           <Icon type="file-text" /> 商品信息
         </div>
         <div className="order-list">
-          {/* {
-            childDTO && childDTO.productDTOList.length > 0 && <OrderList dataSource={childDTO.productDTOList} />
-          } */}
           {
             productDTOList.length > 0 && <OrderList dataSource={productDTOList} />
           }
         </div>
-
-        {/* <div className="od-title od-title-space">
-          <span>商铺信息</span>
-        </div>
-
-        <div style={{ padding: 20, border: '1px solid #ccc' }}>
-          <div>
-            <div className="colo-item">
-              <span className="col-left-item">提交时间：</span>
-              <span>{info.createTime}</span>
-            </div>
-        </div> */}
         <div className="od-title od-title-space">
           <span>物流信息</span>
           <span className="od-title-right" onClick={this.showExpress}>查看物流信息</span>
@@ -271,16 +261,14 @@ const OrderList = (props) => {
 
 const LogisticsDetails = (props) => {
   const expData = props.expData
-  // console.log(expData)
-  let nu = expData.express && expData.express.nu && ''
   return (<div>
     <div className="colo-item">
       <span className="col-left-item">物流公司：</span>
-      <span>{expData.expName}</span>
+      <span>{expData.shipName}</span>
     </div>
     <div className="colo-item">
       <span className="col-left-item">物流编号：</span>
-      <span>{nu}</span>
+      <span>{expData.express}</span>
     </div>
   </div>)
 }
@@ -290,17 +278,35 @@ const LogisticsDetails = (props) => {
 class ShowExpress extends React.Component {
   constructor() {
     super()
-
     this.state = {
-      visible: false
+      visible: false,
+      shipData: [],
+      info: {},
     }
   }
   componentDidMount() {
     this.props.triggerRef && this.props.triggerRef(this)
   }
-  show = () => {
+  show = (obj) => {
     this.setState({
       visible: true,
+    })
+    this.getShipInfo(obj)
+  }
+  getShipInfo = (obj) => {
+    console.log(obj)
+    request({
+      url: ShipDetail,
+      params: {
+        ...obj
+      }
+    }).then(res => {
+      console.log(res)
+      const resdata = res.data
+      this.setState({
+        info: resdata,
+        shipData: resdata.data
+      })
     })
   }
   onCancel = () => {
@@ -309,20 +315,23 @@ class ShowExpress extends React.Component {
     })
   }
   render() {
-    const { visible } = this.state
-    const { express } = this.props
+    const { visible, shipData, info } = this.state
     // console.log(express)
     return <Modal
+      width={600}
       visible={visible}
       title="物流信息"
       onCancel={this.onCancel}
       footer={null}
     >
       <div className="local-modal">
-
-        <Steps progressDot direction="vertical">
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <span style={{ marginRight: 40 }}>物流公司：{info.shipChannelName}</span>
+          <span>物流编号：{info.nu}</span>
+        </div>
+        <Steps progressDot direction="vertical" current={shipData.length}>
           {
-            express.data && express.data.map((item, index) => {
+            shipData && shipData.map((item, index) => {
               return <Step key={index} style={{ width: '100%' }} title={item.context} description={item.ftime} />
             })
           }

@@ -115,139 +115,143 @@ class ShopDetail extends React.Component {
 
     const { info, merchantDTO } = this.state
     return (
-      <div className="shop-detail">
-        <h1 className="item-title" style={{ borderTop: 'none' }}>基础信息</h1>
-        {
-          info.attribute === 0 ? <>
-            <Row>
-              <Col span={6}>
-                <span className="col-title">申请人：</span><span>{merchantDTO.name}</span>
-              </Col>
-              <Col span={6}>
-                <span className="col-title">联系方式：</span><span>{merchantDTO.mobile}</span>
-              </Col>
-              <Col span={6}>
-                <span className="col-title" style={{ width: 100 }}>身份证号码：</span><span>{merchantDTO.idCard}</span>
-              </Col>
-            </Row>
+      <div>
+        <div className="shop-detail">
+          <h1 className="item-title" style={{ borderTop: 'none' }}>基础信息</h1>
+          <div className="sd-cont">
+            {
+              info.attribute === 0 ? <>
+                <Row>
+                  <Col span={6}>
+                    <span className="col-title">申请人：</span><span>{merchantDTO.name}</span>
+                  </Col>
+                  <Col span={6}>
+                    <span className="col-title">联系方式：</span><span>{merchantDTO.mobile}</span>
+                  </Col>
+                  <Col span={6}>
+                    <span className="col-title" style={{ width: 100 }}>身份证号码：</span><span>{merchantDTO.idCard}</span>
+                  </Col>
+                </Row>
 
-            <Row>
-              <Col span={6}>
-                <span className="col-title">证件类型：</span><span>身份证</span>
-              </Col>
-              <Col span={6}>
-                <span className="col-title">申请类型：</span><span>个人</span>
-              </Col>
-            </Row>
-          </> : <>
-              <Row>
-                <Col span={6}>
-                  <span className="col-title">法人姓名：</span><span>{merchantDTO.legalName}</span>
-                </Col>
-                <Col span={6}>
-                  <span className="col-title">联系方式：</span><span>{merchantDTO.mobile}</span>
-                </Col>
-                <Col span={6}>
-                  <span className="col-title">申请类型：</span><span>企业</span>
-                </Col>
-              </Row>
+                <Row>
+                  <Col span={6}>
+                    <span className="col-title">证件类型：</span><span>身份证</span>
+                  </Col>
+                  <Col span={6}>
+                    <span className="col-title">申请类型：</span><span>个人</span>
+                  </Col>
+                </Row>
+              </> : <>
+                  <Row>
+                    <Col span={6}>
+                      <span className="col-title">法人姓名：</span><span>{merchantDTO.legalName}</span>
+                    </Col>
+                    <Col span={6}>
+                      <span className="col-title">联系方式：</span><span>{merchantDTO.mobile}</span>
+                    </Col>
+                    <Col span={6}>
+                      <span className="col-title">申请类型：</span><span>企业</span>
+                    </Col>
+                  </Row>
 
-              <Row>
-                <Col span={6}>
-                  <span className="col-title">身份证号：</span><span>{merchantDTO.idCard}</span>
-                </Col>
-              </Row>
-            </>
-        }
-
-        <h2 className="item-title">银行信息</h2>
-
-        <Row>
-          <Col span={10}>
-            <span className="col-title">开户行：</span><span>{merchantDTO.bankOpen}</span>
-          </Col>
-          <Col span={10}>
-            <span className="col-title">银行卡号：</span><span>{merchantDTO.bankNum}</span>
-          </Col>
-        </Row>
-
-        <h2 className="item-title">图片信息</h2>
-
-        <Row>
-          <Col span={24}>
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-              <span className="col-title" style={{ width: 100 }}>身份证图片：</span>
-              <Gimage style={{ height: 200, marginRight: 20 }} src={merchantDTO.back} alt="图片" />
-              <Gimage style={{ height: 200 }} src={merchantDTO.front} alt="图片" />
-            </div>
-          </Col>
-        </Row>
-
-        {
-          merchantDTO.attribute === 1 && <Row>
-            <Col span={24}>
-              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span className="col-title" style={{ width: 100 }}>营业执照</span>
-                <Gimage style={{ height: 200, marginRight: '10px' }} src={info.license} />
-              </div>
-            </Col>
-          </Row>
-        }
-
-        <h2 className="item-title">店铺信息</h2>
-
-        <div style={{ marginBottom: 20, border: '1px solid #ccc', padding: 16 }}>
-          <Row>
-            <Col span={24}>
-              <span className="col-title">店铺名称：</span><span>{info.name}</span>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col span={24}>
-              <span className="col-title">主营业务：</span><span>{info.mainBiz}</span>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col span={24}>
-              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span className="col-title" style={{ width: 100 }}>店铺logo：</span>
-                <Gimage style={{ height: 120, marginRight: '10px' }} src={info.logo} />
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24}>
-              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span className="col-title" style={{ width: 100 }}>店铺封面图：</span>
-                <Gimage style={{ height: 120, marginRight: '10px' }} src={info.cover} />
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24}>
-              <span className="col-title">店铺介绍：</span><span>{info.shopDesc}</span>
-            </Col>
-          </Row>
-        </div>
-        <Row>
-          <Col span={24} style={{ marginTop: 40 }}>
-            <span className="col-title"></span>
-            <span>
-              {
-                info.state === 0 && <>
-                  <Button onClick={this.failTheAudit}>不通过审核</Button>
-                  <Button type="primary" style={{ marginLeft: 20 }} onClick={this.getApproved}>通过审核</Button>
+                  <Row>
+                    <Col span={6}>
+                      <span className="col-title">身份证号：</span><span>{merchantDTO.idCard}</span>
+                    </Col>
+                  </Row>
                 </>
-              }
+            }
+          </div>
 
-              {/* {
-                info.state === 3 && <Button type="primary" style={{ marginLeft: 20 }} onClick={this.createShop}>创建店铺</Button>
-              } */}
-            </span>
-          </Col>
-        </Row>
+
+          <h2 className="item-title">银行信息</h2>
+
+          <div className="sd-cont">
+            <Row>
+              <Col span={10}>
+                <span className="col-title">开户行：</span><span>{merchantDTO.bankOpen}</span>
+              </Col>
+              <Col span={10}>
+                <span className="col-title">银行卡号：</span><span>{merchantDTO.bankNum}</span>
+              </Col>
+            </Row>
+          </div>
+
+
+          <h2 className="item-title">图片信息</h2>
+
+          <div className="sd-cont">
+            <Row>
+              <Col span={24}>
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <span className="col-title" style={{ width: 100 }}>身份证图片：</span>
+                  <Gimage style={{ height: 200, marginRight: 20 }} src={merchantDTO.back} alt="图片" />
+                  <Gimage style={{ height: 200 }} src={merchantDTO.front} alt="图片" />
+                </div>
+              </Col>
+            </Row>
+
+            {
+              merchantDTO.attribute === 1 && <Row>
+                <Col span={24}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <span className="col-title" style={{ width: 100 }}>营业执照</span>
+                    <Gimage style={{ height: 200, marginRight: '10px' }} src={info.license} />
+                  </div>
+                </Col>
+              </Row>
+            }
+          </div>
+
+
+
+          <h2 className="item-title">店铺信息</h2>
+
+          <div className="sd-cont">
+            <Row>
+              <Col span={24}>
+                <span className="col-title">店铺名称：</span><span>{info.name}</span>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24}>
+                <span className="col-title">主营业务：</span><span>{info.mainBiz}</span>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24}>
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <span className="col-title" style={{ width: 100 }}>店铺logo：</span>
+                  <Gimage style={{ height: 120, marginRight: '10px' }} src={info.logo} />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <span className="col-title" style={{ width: 100 }}>店铺封面图：</span>
+                  <Gimage style={{ height: 120, marginRight: '10px' }} src={info.cover} />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <span className="col-title">店铺介绍：</span><span>{info.shopDesc}</span>
+              </Col>
+            </Row>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 20, marginBottom: 20, textAlign: 'center' }}>
+          {
+            info.state === 0 && <>
+              <Button onClick={this.failTheAudit}>不通过审核</Button>
+              <Button type="primary" style={{ marginLeft: 20 }} onClick={this.getApproved}>通过审核</Button>
+            </>
+          }
+        </div>
         <AuditDecline triggerRef={ref => this.audtChild = ref} successCallback={this.auditDeclineCallback} />
       </div>
     )

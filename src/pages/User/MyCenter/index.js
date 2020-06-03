@@ -3,7 +3,7 @@ import connect from '../../../utils/connect'
 import { Menu, Icon, Dropdown } from 'antd';
 import './index.less'
 import { withRouter } from "react-router-dom";
-import Gimage from '../../../common/Gimage'
+// import Gimage from '../../../common/Gimage'
 @connect
 class MyCenter extends React.Component {
 
@@ -52,7 +52,7 @@ class MyCenter extends React.Component {
       <Dropdown overlayClassName="user-style" overlay={menu} onVisibleChange={this.visibleChange}>
         <div style={{display: 'flex', alignItems: 'center'}}>
           <span style={{ color: visible ? '#08f' : '' }}>{name}</span>
-          <Gimage style={{ width: 36, height: 36, borderRadius: 18, marginLeft: 10 }} src="https://tiyan.himall.kuaidiantong.cn/Storage/Shop/1/Products/2520/1_100.png" />
+          {/* <Gimage style={{ width: 36, height: 36, borderRadius: 18, marginLeft: 10 }} src="https://tiyan.himall.kuaidiantong.cn/Storage/Shop/1/Products/2520/1_100.png" /> */}
 
           <Icon style={{ marginLeft: 10 }} type={visible ? 'caret-up' : 'caret-down'} />
         </div>

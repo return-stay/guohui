@@ -21,6 +21,7 @@ const CateUpDownCate= '/cate/upDownCate' //类目上下线
 const CategoryFindAllCateId = '/cate/queryCate' //商品类目
 
 const LogisticsList = '/common/logistics/search' //获取物流公司
+const ShipDetail = '/ship/v1/detail' //物流详情
 
 const CategoryQueryProductTypeAttributes =  '/category/queryProductTypeAttributes' //根据类目查询商品属性
 const CategoryQueryProductIdAttributes = '/category/queryProductIdAttributes' //根据id 查询数据
@@ -108,6 +109,7 @@ export {
   UploadRemove,
   Login,
   LogisticsList,
+  ShipDetail,
   QueryByOwenerIdAndOwnerType,
 
   ConsoleDeskQueryCalDataCenter,
