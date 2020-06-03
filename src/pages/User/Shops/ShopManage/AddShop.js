@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Steps, Button, message, Radio, Input, Row, Col, Rate, Select } from 'antd';
+import { Form, Steps, Button, message, Radio, Input, Rate, Select } from 'antd';
 import { ShopAdd, ShopDetial, ShopUpdate, CategoryFindAllCateId } from '../../../../config/api'
 import { dismantleSearch, getOptionsList } from '../../../../utils'
 import request from '../../../../utils/request'
@@ -277,40 +277,30 @@ class AddShop extends React.Component {
     const { current, front, back, logo, cover, attributeShow, tradeList, license, confirmLoading } = this.state;
     console.log(logo)
     const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: { span: 10 },
-      wrapperCol: { span: 14 },
-    };
     const formItemLayoutTwo = {
-      labelCol: { span: 3 },
+      labelCol: { span: 2 },
       wrapperCol: { span: 14 },
     };
     const formLayout = {
-      labelCol: { span: 5 },
+      labelCol: { span: 2 },
       wrapperCol: { span: 19 },
     }
     return (
       <div className="add-shop-box user-box">
 
-        <Row>
-          <Col span={4} style={{ textAlign: 'right', color: 'rgba(0, 0, 0, 0.85)' }}></Col>
-          <Col span={19}>
-
-            <div style={{ width: 500, margin: '20px 0 30px' }}>
-              <Steps current={current}>
-                {steps.map(item => (
-                  <Step key={item.title} title={item.title} />
-                ))}
-              </Steps>
-            </div>
-          </Col>
-        </Row>
+        <div style={{ width: 500, margin: '20px 0 30px' }}>
+          <Steps current={current}>
+            {steps.map(item => (
+              <Step key={item.title} title={item.title} />
+            ))}
+          </Steps>
+        </div>
 
 
-        <Form {...formLayout}>
+        <Form layout='vertical'>
 
           <div className={steps[current].type === 1 ? '' : 'display-none'}>
-            <Form.Item label="商户类型">
+            <Form.Item label="商户类型" {...formLayout}>
               {getFieldDecorator('attribute', { valuePropName: 'value', initialValue: 1, rules: [{ required: true, message: '请选择店铺类型' }] })(
                 <Radio.Group onChange={this.shopTypeChange}>
                   <Radio value={0}>个人</Radio>
@@ -321,14 +311,14 @@ class AddShop extends React.Component {
 
             {
               attributeShow === 1 && <>
-                <Form.Item label="企业名称">
+                <Form.Item label="企业名称：">
                   {getFieldDecorator('companyName', { valuePropName: 'value', rules: [{ required: true, message: '请输入企业名称' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
-                <Form.Item label="法人名称">
+                <Form.Item label="法人名称：">
                   {getFieldDecorator('legalName', { valuePropName: 'value', rules: [{ required: true, message: '请输入姓名' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
 
-                <Form.Item label="法人身份证号码">
+                <Form.Item label="法人身份证号码：">
                   {getFieldDecorator('idCard', { valuePropName: 'value', rules: [{ required: true, message: '请输入身份证号码' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
               </>
@@ -336,46 +326,44 @@ class AddShop extends React.Component {
 
             {
               attributeShow === 0 && <>
-                <Form.Item label="姓名">
+                <Form.Item label="姓名：">
                   {getFieldDecorator('legalName', { valuePropName: 'value', rules: [{ required: true, message: '请输入姓名' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
 
-                <Form.Item label="身份证号码">
+                <Form.Item label="身份证号码：">
                   {getFieldDecorator('idCard', { valuePropName: 'value', rules: [{ required: true, message: '请输入身份证号码' }] })(<Input style={inputStyle} />)}
                 </Form.Item>
               </>
             }
 
-            <Form.Item label="手机号">
+            <Form.Item label="手机号：">
               {getFieldDecorator('mobile', { valuePropName: 'value', rules: [{ required: true, message: '请输入手机号' }] })(
                 <Input style={{ width: 250, marginRight: 20 }} />
               )}
               {/* <span style={{ fontSize: 12, color: '#f5222d' }}>请慎重填写手机号，不可修改</span> */}
             </Form.Item>
-            <Form.Item label="银行卡号">
+            <Form.Item label="银行卡号：">
               {getFieldDecorator('bankNum', { valuePropName: 'value', rules: [{ required: true, message: '请输入银行卡' }] })(<Input style={inputStyle} />)}
             </Form.Item>
-            <Form.Item label="开户行">
+            <Form.Item label="开户行：">
               {getFieldDecorator('bankOpen', { valuePropName: 'value', rules: [{ required: true, message: '请输入开户行' }] })(<Input style={inputStyle} />)}
             </Form.Item>
 
-            <Row>
-              <Col span={5} style={{ textAlign: 'right', color: 'rgba(0, 0, 0, 0.85)' }}>
-                身份证信息：
-              </Col>
-              <Col span={19}>
-                <div style={{ display: 'inline-block', width: 240, height: 120, marginRight: 20 }}>
-                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证正面" file={front} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'front', imgid) }} />
-                </div>
-                <div style={{ display: 'inline-block', width: 240, height: 120 }}>
-                  <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证反面" file={back} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'back', imgid) }} />
-                </div>
-              </Col>
-            </Row>
+            <div className="from-title">
+              身份证信息：
+            </div>
+            <div>
+              <div style={{ display: 'inline-block', width: 240, height: 120, marginRight: 20 }}>
+                <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证正面" file={front} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'front', imgid) }} />
+              </div>
+              <div style={{ display: 'inline-block', width: 240, height: 120 }}>
+                <Gupload className="avatar-uploader-card" uploadButtonText="请上传手持身份证反面" file={back} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'back', imgid) }} />
+              </div>
+            </div>
 
             {
               attributeShow === 1 && <>
-                <Form.Item label="营业执照">
+                <Form.Item label="营业执照：">
                   <Gupload className="avatar-uploader-card" uploadButtonText="请上传营业执照" file={license} success={(img, imgid) => { this.imgUploadSuccessCallback(img, 'license', imgid) }} />
                 </Form.Item>
               </>
@@ -384,26 +372,26 @@ class AddShop extends React.Component {
 
           <div className={steps[current].type === 2 ? '' : 'display-none'}>
 
-            <Form.Item label="店铺名称">
+            <Form.Item label="店铺名称：">
               {getFieldDecorator('shopName', { valuePropName: 'value', rules: [{ required: true, message: '请输入店铺名称' }] })(<Input style={inputStyle} />)}
             </Form.Item>
-            <Form.Item label="主营业务">
+            <Form.Item label="主营业务：">
               {getFieldDecorator('mainBiz', { valuePropName: 'value', rules: [{ required: true, message: '请选择主营业务' }] })(
                 <Select mode="multiple" placeholder='请选择主营业务' style={inputStyle} onChange={this.tradeChange}>
                   {getOptionsList(tradeList)}
                 </Select>
               )}
             </Form.Item>
-            <Form.Item label="店长手机号">
+            <Form.Item label="店长手机号：">
               {getFieldDecorator('shopMobile', { valuePropName: 'value' })(<Input style={inputStyle} />)}
             </Form.Item>
-            <Form.Item label="店铺标签">
+            <Form.Item label="店铺标签：">
               {getFieldDecorator('tag', { valuePropName: 'value' })(<Input style={inputStyle} />)}
             </Form.Item>
-            <Form.Item label="店铺星级">
+            <Form.Item label="店铺星级" {...formItemLayoutTwo} style={{ display: 'flex', alignItems: 'center' }}>
               {getFieldDecorator('stars', { valuePropName: 'value' })(<Rate />)}
             </Form.Item>
-            <Form.Item label="店铺等级">
+            <Form.Item label="店铺等级" {...formItemLayoutTwo}>
               {getFieldDecorator('type', { valuePropName: 'value' })(
                 <Radio.Group>
                   <Radio value={0}>普通店铺</Radio>
@@ -412,39 +400,29 @@ class AddShop extends React.Component {
                 </Radio.Group>
               )}
             </Form.Item>
+            <Form.Item label="店铺logo：" {...formItemLayoutTwo}>
+              <Gupload uploadButtonText="上传logo（200*200）" file={logo} success={(img) => { this.imgUploadSuccessCallback(img, 'logo') }} />
+            </Form.Item>
 
-            <div style={{ width: '100%', display: 'flex' }}>
-              <div style={{ flex: 1 }}>
-                <Form.Item label="店铺logo" {...formItemLayout}>
-                  <Gupload uploadButtonText="上传logo（200*200）" file={logo} success={(img) => { this.imgUploadSuccessCallback(img, 'logo') }} />
-                </Form.Item>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ marginLeft: '-30%' }}>
-                  <Form.Item label="店铺封面" {...formItemLayoutTwo}>
-                    <Gupload uploadButtonText="上传封面（686*280）" file={cover} success={(img) => { this.imgUploadSuccessCallback(img, 'cover') }} />
-                  </Form.Item>
-                </div>
-              </div>
-            </div>
-            <Form.Item label="店铺简介">
+            <Form.Item label="店铺封面：" {...formItemLayoutTwo}>
+              <Gupload className="avatar-uploader-card-fengmian" uploadButtonText="上传封面（686*280）" file={cover} success={(img) => { this.imgUploadSuccessCallback(img, 'cover') }} />
+            </Form.Item>
+            <Form.Item label="店铺简介：">
               {getFieldDecorator('shopDesc', { valuePropName: 'value' })(<TextArea style={{ width: 500, minHeight: 100 }} />)}
             </Form.Item>
           </div>
 
-          <Form.Item label=" " colon={false}>
-            <div className="steps-action">
-              {current < steps.length - 1 && (
-                <Button type="primary" style={{ width: 200 }} onClick={() => this.next()}>下一步</Button>
-              )}
-              {current === steps.length - 1 && (
-                <Button type="primary" style={{ width: 200 }} onClick={() => this.prev()}>上一步</Button>
-              )}
-              {current > 0 && (
-                <Button style={{ marginLeft: 8, width: 200 }} loading={confirmLoading} type="primary" onClick={this.saveOk}>提交</Button>
-              )}
-            </div>
-          </Form.Item>
+          <div className="steps-action">
+            {current < steps.length - 1 && (
+              <Button type="primary" style={{ width: 120 }} onClick={() => this.next()}>下一步</Button>
+            )}
+            {current === steps.length - 1 && (
+              <Button style={{ width: 120 }} onClick={() => this.prev()}>上一步</Button>
+            )}
+            {current > 0 && (
+              <Button style={{ marginLeft: 20, width: 120 }} loading={confirmLoading} type="primary" onClick={this.saveOk}>提交</Button>
+            )}
+          </div>
         </Form>
       </div>
     );
