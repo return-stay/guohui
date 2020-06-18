@@ -111,7 +111,6 @@ export default class Upgrade extends React.Component {
         columns={_columns}
         pagination={true}
         isRowSelection={false}
-        query={{ orderDirection: 1 }}
         bordered={true}
         selectChange={this.selectChange}
         triggerRef={ref => { this.tableChild = ref }}

@@ -245,7 +245,6 @@ class UserManage extends React.Component {
           columns={_columns}
           pagination={true}
           isRowSelection={true}
-          query={{ orderDirection: 1 }}
           bordered={true}
           selectChange={this.selectChange}
           triggerRef={ref => { this.tableChild = ref }}
